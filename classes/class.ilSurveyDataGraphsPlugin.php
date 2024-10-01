@@ -11,11 +11,7 @@ class ilSurveyDataGraphsPlugin extends ilPageComponentPlugin
 
     public function isValidParentType(string $a_type): bool
     {
-        if (in_array($a_type, array("lm", "wpg", "cat")))
-        {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     public function getCssFiles($a_mode) :array
