@@ -26,11 +26,12 @@ class ilSurveyDataGraphsSkillUserData
     private mixed $thresholds;
     private mixed $max_level_value;
 
-    public function __construct(array $a_properties){
+    public function __construct(array $a_properties)
+    {
 
         global $DIC;
         $this->dic = $DIC;
-        
+
         $this->base_skills = json_decode($a_properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SI_SKILLDATA], true);
         $this->level_data = json_decode($a_properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_LEVELDATA], true);
         $this->colors = json_decode($a_properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SI_COLOR], true);
@@ -68,11 +69,11 @@ class ilSurveyDataGraphsSkillUserData
     public function getRequirements(): bool
     {
         $fi_svy_objs = $this->data->getFinishedSvyObjs($this->obj_ids);
-        if(!empty(array_diff($this->obj_ids,$fi_svy_objs))){
+        if (!empty(array_diff($this->obj_ids, $fi_svy_objs))) {
             return false;
         }
         foreach ($fi_svy_objs as $obj_id) {
-            if(!($this->data->getSvyProgress($obj_id) >= $this->progress_level)){
+            if (!($this->data->getSvyProgress($obj_id) >= $this->progress_level)) {
                 return false;
             }
         }
@@ -83,7 +84,7 @@ class ilSurveyDataGraphsSkillUserData
     {
         $i = 1;
         $result = [];
-        foreach ($this->obj_ids as $obj_id){
+        foreach ($this->obj_ids as $obj_id) {
             $result[] = [
                 "id" => $i++,
                 "date" => $this->data->getFinishedSvyTimestamp($obj_id),
@@ -116,35 +117,35 @@ class ilSurveyDataGraphsSkillUserData
 
     public function getTplClassname(): string
     {
-        if(count($this->obj_ids) === 1){
-            $result =  "div_" . ilSurveyDataGraphsPluginGUI::SINGLE_SI;
-        }else{
-            $result =  "div_" . ilSurveyDataGraphsPluginGUI::MULTI_SI;
+        if (count($this->obj_ids) === 1) {
+            $result = "div_" . ilSurveyDataGraphsPluginGUI::SINGLE_SI;
+        } else {
+            $result = "div_" . ilSurveyDataGraphsPluginGUI::MULTI_SI;
         }
         return $result;
     }
 
-    private function getSvyAnswerSkillValues($a_obj_id) : array
+    private function getSvyAnswerSkillValues($a_obj_id): array
     {
         $finishedAnswerSkillData = $this->data->getFinishedAnswerSkillData($a_obj_id);
         $result = [];
         foreach ($this->base_skills as $skl_id => $base_skill) {
-            if(isset($finishedAnswerSkillData[$skl_id])){
+            if (isset($finishedAnswerSkillData[$skl_id])) {
                 $result[$skl_id] = intval($finishedAnswerSkillData[$skl_id]['sum_skill_value']);
-            }else{
+            } else {
                 $result[$skl_id] = 0;
             }
         }
         return $result;
     }
 
-    private function getDynamicThresholdsForSvy($a_obj_id) : array
+    private function getDynamicThresholdsForSvy($a_obj_id): array
     {
         $result = [];
         foreach ($this->thresholds as $skl_id => $threshold) {
-            $count_questions = count($this->questions[$skl_id][$a_obj_id]);
+            $count_questions = count($this->questions[$skl_id][$a_obj_id] ?? []);
             $count_answers = count($this->data->getBaseSkillAnswers($a_obj_id, $skl_id));
-            if(isset($threshold[$a_obj_id])){
+            if (isset($threshold[$a_obj_id])) {
                 foreach ($threshold[$a_obj_id] as $item) {
                     $result[$skl_id][$item['id']] = ($item['threshold'] / $count_questions * $count_answers);
                 }
@@ -153,7 +154,7 @@ class ilSurveyDataGraphsSkillUserData
         return $result;
     }
 
-    private function getSkillEvaluationForSvyObjects() : array
+    private function getSkillEvaluationForSvyObjects(): array
     {
         $result = [];
         foreach ($this->obj_ids as $obj_id) {
@@ -166,19 +167,19 @@ class ilSurveyDataGraphsSkillUserData
                 $points = $svy_answer_values[$skl_id];
                 foreach ($threshold as $lvl_id => $value) {
                     $level_data = $this->level_data[$skl_id][$lvl_id];
-                    if($points <= $value && $points != 0){
+                    if ($points <= $value && $points != 0) {
                         $result[$skl_id][$obj_id] = [
                             "skill_id" => $skl_id,
                             "level_id" => $lvl_id,
                             "questions" => $count_q,
                             "answers" => $count_a,
                             "points" => $points,
-                            "points_answer" => $count_a >= 1 ? ($points/$count_a) : $points,
+                            "points_answer" => $count_a >= 1 ? ($points / $count_a) : $points,
                             "level_title" => $level_data['title'],
                             "level" => intval($level_data['nr']),
                         ];
                         break;
-                    }elseif($points == 0){
+                    } elseif ($points == 0) {
                         $result[$skl_id][$obj_id] = [
                             "skill_id" => $skl_id,
                             "level_id" => $lvl_id,
@@ -196,30 +197,30 @@ class ilSurveyDataGraphsSkillUserData
         }
         return $result;
     }
-    private function getChartRunData() : array
+    private function getChartRunData(): array
     {
         $runs = [];
-        for($i = 0; $i < count($this->obj_ids); $i++){
-            $runs[] = $i+1 ;
+        for ($i = 0; $i < count($this->obj_ids); $i++) {
+            $runs[] = $i + 1 ;
         }
         return $runs;
     }
-    private function getChartDSData() : array|string
+    private function getChartDSData(): array|string
     {
         $eval = $this->getSkillEvaluationForSvyObjects();
         $result = [];
         foreach ($eval as $key => $value) {
-            if($this->chart_scale_option === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_LEVEL){
+            if ($this->chart_scale_option === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_LEVEL) {
                 $result[$key] = implode(",", array_column($value, 'level'));
-            }elseif ($this->chart_scale_option === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS){
+            } elseif ($this->chart_scale_option === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS) {
                 $result[$key] = implode(",", array_column($value, 'points_answer'));
-            }elseif ($this->chart_scale_option === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL){
+            } elseif ($this->chart_scale_option === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL) {
                 $result[$key] = implode(",", array_column($value, 'points'));
             }
         }
         return $result;
     }
-    public function getChartData() : array
+    public function getChartData(): array
     {
         return [
             "chart_title" => $this->chart_title,
@@ -227,7 +228,7 @@ class ilSurveyDataGraphsSkillUserData
             "runs" => count($this->obj_ids) === 1 ? json_encode([""]) : json_encode($this->getChartRunData()),
             "index_axis" => count($this->obj_ids) === 1 ? 'y' : 'x',
             "skl_data" => $this->getChartDSData(),
-            "skl_max_value" => max($this->getChartDSData()),
+            "skl_max_value" => !empty($this->getChartDSData()) ? max($this->getChartDSData()) : 0,
             "color" => $this->colors,
             "hidden_data_label" => $this->chart_legend_hidden_level,
             "x_scale_title" => $this->x_scale_title,
@@ -235,7 +236,7 @@ class ilSurveyDataGraphsSkillUserData
         ];
     }
 
-    private function getAnswerDataForAll() : array
+    private function getAnswerDataForAll(): array
     {
         $count_questions = [];
         $count_answers = [];
@@ -270,10 +271,10 @@ class ilSurveyDataGraphsSkillUserData
             default => "",
         };
 
-        return '<img style="width: 100px; float: left;" src="'. $path .'">';
+        return '<img style="width: 100px; float: left;" src="' . $path . '">';
     }
 
-    private function getDynThresholdsForAll() : array
+    private function getDynThresholdsForAll(): array
     {
         $new_base_skill_thresholds = [];
         $sum_thresholds = $this->sum_thresholds;
@@ -285,9 +286,9 @@ class ilSurveyDataGraphsSkillUserData
             $count_a = $count[$skl_id]['answers'];
 
             foreach ($base_skill as $lvl_id => $base_skill_threshold) {
-                if ($count_a >= 1){
+                if ($count_a >= 1) {
                     $new_base_skill_thresholds[$skl_id][$lvl_id] = ($base_skill_threshold / $count_q) * $count_a;
-                }else{
+                } else {
                     $new_base_skill_thresholds[$skl_id][$lvl_id] = 0;
                 }
             }
@@ -295,7 +296,7 @@ class ilSurveyDataGraphsSkillUserData
 
         return $new_base_skill_thresholds;
     }
-    private function getLevel() : array
+    private function getLevel(): array
     {
         $svy_answer_values = $this->getAnswerDataForAll();
         $svy_skill_thresholds = $this->getDynThresholdsForAll();
@@ -307,7 +308,7 @@ class ilSurveyDataGraphsSkillUserData
                 $points = $svy_answer_values[$skl_id]['points'];
                 $lvl_datails = $this->level_data[$skl_id][$lvl_id];
 
-                if($points <= $threshold && $points != 0){
+                if ($points <= $threshold && $points != 0) {
                     $result[$skl_id] = [
                         "skill_id" => $skl_id,
                         "title" => $this->base_skills[$skl_id]['title'],
@@ -322,7 +323,7 @@ class ilSurveyDataGraphsSkillUserData
                         "resource" => $this->data->getSkillResourceRefId(intval($lvl_id)),
                     ];
                     break;
-                }elseif($points == 0){
+                } elseif ($points == 0) {
                     $result[$skl_id] = [
                         "skill_id" => $skl_id,
                         "title" => $this->base_skills[$skl_id]['title'],
@@ -343,7 +344,7 @@ class ilSurveyDataGraphsSkillUserData
 
         return $result;
     }
-    public function getSkillResourceLinks(int $a_ref_id) : string
+    public function getSkillResourceLinks(int $a_ref_id): string
     {
         $f = $this->dic->ui()->factory();
         $renderer = $this->dic->ui()->renderer();
@@ -358,7 +359,7 @@ class ilSurveyDataGraphsSkillUserData
         return $renderer->render($f->link()->bulky($object_icon, $title, $target));
     }
 
-    private function skillColorIcon(int $a_level) : string
+    private function skillColorIcon(int $a_level): string
     {
         $color = match ($a_level) {
             1 => "#D5573D",
@@ -371,7 +372,7 @@ class ilSurveyDataGraphsSkillUserData
             . ' <circle cx="12.5" cy="12.5" r="10" stroke="black" stroke-width="0.2" fill="' . $color . '" /> </svg>';
     }
 
-    public function sklEvalTblData() : array
+    public function sklEvalTblData(): array
     {
         $levels = $this->getLevel();
         $skill_list = [];
@@ -380,7 +381,7 @@ class ilSurveyDataGraphsSkillUserData
 
             $resource_link_list = [];
 
-            foreach ($level['resource'] as $r_link){
+            foreach ($level['resource'] as $r_link) {
                 $resource_link_list[] = ['link' => $r_link['rep_ref_id']];
             }
             $skill_list[] = [
@@ -398,22 +399,22 @@ class ilSurveyDataGraphsSkillUserData
                     'answered' => $level['answers'],
                     'skipped' => $level['questions'] - $level['answers'],
                     'points_total' => $level['points'],
-                    'proportion' => round((($level['answers']/$level['questions'])*100),2) . '%'
+                    'proportion' => round((($level['answers'] / $level['questions']) * 100), 2) . '%'
                 )
             ];
         }
         return $skill_list;
     }
 
-    public function environment() : array
+    public function environment(): array
     {
 
-        $skill_result = function ($links){
+        $skill_result = function ($links) {
             $result = "";
-            if(empty($links)){
+            if (empty($links)) {
                 $result = 'Keine Lernmaterialien vorhanden';
-            }else{
-                foreach ($links as $link){
+            } else {
+                foreach ($links as $link) {
                     $result .= '<div style="padding-left: 45px">' . $this->getSkillResourceLinks($link['link']) . '</div>';
                 }
             }
@@ -423,7 +424,7 @@ class ilSurveyDataGraphsSkillUserData
         return  array('skill_result' => $skill_result,);
     }
 
-    public function getMAXQuestValue() : int
+    public function getMAXQuestValue(): int
     {
         $result = [];
         foreach ($this->obj_ids as $obj_id) {
@@ -432,17 +433,17 @@ class ilSurveyDataGraphsSkillUserData
         return max($result);
     }
 
-    public function getMAXQuestTotalValue() : int
+    public function getMAXQuestTotalValue(): int
     {
         $levels = $this->getLevel();
         $result = [];
-        foreach ($this->base_skills as $base_skill){
+        foreach ($this->base_skills as $base_skill) {
             $result[] = $levels[$base_skill['skill_id']]['answers'] * $this->getMAXQuestValue();
         }
         return max($result);
     }
 
-    public function getMAXQuestLevel() : int
+    public function getMAXQuestLevel(): int
     {
         return $this->max_level_value;
     }
