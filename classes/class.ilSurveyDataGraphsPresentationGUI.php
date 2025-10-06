@@ -3,8 +3,6 @@
 use ILIAS\UI\Factory;
 use ILIAS\UI\Renderer;
 
-require_once __DIR__ . "/../vendor/autoload.php";
-
 class ilSurveyDataGraphsPresentationGUI
 {
     public const SI_RESULT_ID_HEADER = "si_result_id_header";

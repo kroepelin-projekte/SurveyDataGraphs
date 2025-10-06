@@ -2,8 +2,6 @@
 
 use ILIAS\Data\URI;
 
-require_once __DIR__ . "/../vendor/autoload.php";
-
 class ilSurveyDataGraphsSkillUserData
 {
     private ilSurveyDataGraphsDB $data;

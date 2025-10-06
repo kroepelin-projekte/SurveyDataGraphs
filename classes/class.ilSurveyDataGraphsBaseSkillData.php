@@ -2,8 +2,6 @@
 
 use ILIAS\DI\Container;
 
-require_once __DIR__ . "/../vendor/autoload.php";
-
 class ilSurveyDataGraphsBaseSkillData
 {
     private array $colors;
