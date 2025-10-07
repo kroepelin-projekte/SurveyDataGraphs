@@ -29,12 +29,21 @@ class ilSurveyDataGraphsPresentationGUI
     }
 
     /**
-     * @throws \ilTemplateException
+     * @throws ilTemplateException
+     * @throws ilSystemStyleException
      */
     private function svyDetailTableTpl(): string
     {
         $data = $this->data->getResultListData();
-        $tpl = $this->plugin->getTemplate("tpl.svy-result-list.html");
+
+        $tpl = new ilTemplate(
+            "tpl.svy-result-list.html",
+            true,
+            true,
+            'public/' . ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY,
+            ilGlobalTemplateInterface::DEFAULT_BLOCK,
+            true
+        );
 
         $tpl->setVariable("SI_RESULT_ID_HEADER", $this->plugin->txt(self::SI_RESULT_ID_HEADER));
         $tpl->setVariable("SI_RESULT_DATE_HEADER", $this->plugin->txt(self::SI_RESULT_DATE_HEADER));
@@ -54,12 +63,20 @@ class ilSurveyDataGraphsPresentationGUI
     }
 
     /**
-     * @throws \ilTemplateException
+     * @throws ilTemplateException
      */
     private function getChartTpl(): string
     {
         $chart_data = $this->data->getChartData();
-        $tpl = $this->plugin->getTemplate("tpl.chart.html");
+
+        $tpl = new ilTemplate(
+            "tpl.chart.html",
+            true,
+            true,
+            'public/' . ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY,
+            ilGlobalTemplateInterface::DEFAULT_BLOCK,
+            true
+        );
 
         $tpl->setVariable("CHART_TITLE", $chart_data['chart_title']);
         $tpl->setVariable("CHARTID",  "sdg_" . self::$id_counter);
@@ -148,20 +165,26 @@ class ilSurveyDataGraphsPresentationGUI
     }
 
     /**
-     * @throws \ilTemplateException
+     * @throws ilTemplateException
+     * @throws ilSystemStyleException
      */
     public function getContentTpl(): string
     {
-
-        $tpl = $this->plugin->getTemplate("tpl.content.html");
-        $tpl_access = $this->plugin->getTemplate("tpl.access-container.html");
+        $tpl = new ilTemplate(
+            "tpl.access-container.html",
+            true,
+            true,
+            'public/' . ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY,
+            ilGlobalTemplateInterface::DEFAULT_BLOCK,
+            true
+        );
 
         if ($this->data->getRequirements()){
             $tpl->setVariable("SKL_NAV", $this->sklEvaluationTableGUI());
         }else{
 
-            $tpl_access->setVariable("ACCESS_ITEM", $this->data->getChartPlaceholder());
-            $tpl->setVariable("ACCESS", $tpl_access->get());
+            $tpl->setVariable("ACCESS_ITEM", $this->data->getChartPlaceholder());
+            $tpl->setVariable("ACCESS", $tpl->get());
         }
 
         $tpl->setVariable("TPL_CLASS", $this->data->getTplClassname());
@@ -173,7 +196,7 @@ class ilSurveyDataGraphsPresentationGUI
     }
 
     /**
-     * @throws \ilTemplateException
+     * @throws ilTemplateException
      */
     private function sklEvaluationTableGUI() : string
     {

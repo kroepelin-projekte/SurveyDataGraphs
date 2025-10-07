@@ -252,8 +252,9 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         }
         if ($a_create)
         {
-            $this->addCreationButton($form);
+            //$this->addCreationButton($form);
             $form->addCommandButton(self::CMD_CANCEL, $this->lng->txt(self::CMD_CANCEL));
+            $form->addCommandButton(self::CMD_CREATE, $this->lng->txt(self::CMD_SAVE));
             $form->setTitle($this->getPlugin()->txt(self::CMD_INSERT));
         }
         else
