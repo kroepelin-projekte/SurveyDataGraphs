@@ -170,7 +170,22 @@ class ilSurveyDataGraphsPresentationGUI
      */
     public function getContentTpl(): string
     {
+        global $DIC;
+
+        $template = $DIC->ui()->mainTemplate();
+        $template->addCss(ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY . "/css/surveydatagraphs.css");
+        $template->addJavaScript(ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY . "/js/chart.min.js");
+
         $tpl = new ilTemplate(
+            "tpl.content.html",
+            true,
+            true,
+            'public/' . ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY,
+            ilGlobalTemplateInterface::DEFAULT_BLOCK,
+            true
+        );
+
+        $tpl_access = new ilTemplate(
             "tpl.access-container.html",
             true,
             true,
@@ -182,8 +197,7 @@ class ilSurveyDataGraphsPresentationGUI
         if ($this->data->getRequirements()){
             $tpl->setVariable("SKL_NAV", $this->sklEvaluationTableGUI());
         }else{
-
-            $tpl->setVariable("ACCESS_ITEM", $this->data->getChartPlaceholder());
+            $tpl_access->setVariable("ACCESS_ITEM", $this->data->getChartPlaceholder());
             $tpl->setVariable("ACCESS", $tpl->get());
         }
 

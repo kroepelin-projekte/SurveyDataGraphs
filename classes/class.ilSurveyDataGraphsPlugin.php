@@ -7,16 +7,6 @@ class ilSurveyDataGraphsPlugin extends ilPageComponentPlugin
     {
         return "SurveyDataGraphs";
     }
-
-    public function getCssFiles($a_mode) :array
-    {
-        return array("css/surveydatagraphs.css");
-    }
-
-    public function getJavascriptFiles(string $a_mode) : array
-    {
-        return array("js/chart.min.js");
-    }
     
     public function isValidParentType(string $a_type): bool
     {

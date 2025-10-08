@@ -4,8 +4,9 @@
     </canvas>
 </div>
 
-<script src="../../js/chart.min.js"></script>
-<script>
+<script type="module">
+  import { Chart } from 'chart.js';
+
   new Chart(document.getElementById("{CHARTID}"), {
     type: '{CHART_TYPE}',
     data: {
