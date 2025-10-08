@@ -174,7 +174,6 @@ class ilSurveyDataGraphsPresentationGUI
 
         $template = $DIC->ui()->mainTemplate();
         $template->addCss(ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY . "/css/surveydatagraphs.css");
-        $template->addJavaScript(ilSurveyDataGraphsConstants::PLUGIN_DIRECTORY . "/js/chart.min.js");
 
         $tpl = new ilTemplate(
             "tpl.content.html",
