@@ -197,7 +197,7 @@ class ilSurveyDataGraphsPresentationGUI
             $tpl->setVariable("SKL_NAV", $this->sklEvaluationTableGUI());
         }else{
             $tpl_access->setVariable("ACCESS_ITEM", $this->data->getChartPlaceholder());
-            $tpl->setVariable("ACCESS", $tpl->get());
+            $tpl->setVariable("ACCESS", $tpl_access->get());
         }
 
         $tpl->setVariable("TPL_CLASS", $this->data->getTplClassname());
