@@ -13,9 +13,9 @@ Following features are integrated:
 
 ## Requirements
 
-### (* ILIAS 9.0 - 9.999)
+### (* ILIAS 10.0 - 10.999)
 
-#### (* PHP >=8.1)
+#### (* PHP >=8.2)
 
 ## Installation
 
