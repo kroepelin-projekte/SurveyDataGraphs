@@ -6,66 +6,124 @@
  */
 class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
 {
-    public const MSG_OBJ_MODIFIED = "msg_obj_modified";
-    public const CMD_INSERT = "cmd_insert";
-    public const CMD_UPDATE = "update";
-    public const CMD_CREATE = "create";
-    public const CMD_CANCEL = "cancel";
-    public const CMD_EDIT = "edit";
-    public const CMD_SAVE = "save";
-    public const MODE = "mode";
-    public const EDIT_CONF_SI_PROC_LIMIT = "edit_conf_si_proc_limit";
-    public const SETTINGS1 = "settings_1";
-    public const SETTINGS2 = "settings_2";
-    public const SINGLE_SI = "simo";
-    public const MULTI_SI = "sile";
-    public const EDIT_COLOR = "editcolor";
-    public const UPDATE_COLOR = "updatecolor";
-    public const EDIT_CONF_SVY_SELECTION = 'edit_conf_svy_selection';
-    public const EDIT_CONF_SVY_SELECTION_INFO = 'edit_conf_svy_selection_info';
-    public const EDIT_CONF_SI_COLOR = 'edit_conf_si_color';
-    public const EDIT_CONF_SI_SKILLDATA = 'edit_conf_si_skilldata';
-    public const VIEW_PARENT_TITLE = 'view_parent_title';
-    public const VIEW_PARENT_TITLE_INFO = 'view_parent_title_info';
-    public const VIEW_DIAGRAM_TITLE = 'view_diagram_title';
-    public const VIEW_DIAGRAM_TITLE_INFO = 'view_diagram_title_info';
-    public const EDIT_CONF_PARENT_TITLE = 'edit_conf_parent_title';
-    public const EDIT_CONF_DIAGRAM_TITLE = 'edit_conf_diagram_title';
-    public const FORM_COLOR_SECTION_HEADER = 'form_color_section_header';
-    public const FORM_TEXT_SECTION_TITLE = 'form_text_section_title';
-    public const FORM_TEXT_SECTION_INFO = 'form_text_section_info';
-    public const FORM_COLOR_SECTION_HEADER_INFO = 'form_color_section_header_info';
-    public const VIEW_ACCESS_PLACEHOLDER = 'view_access_placeholder';
-    public const VIEW_ACCESS_PLACEHOLDER_INFO = 'view_access_placeholder_info';
-    public const EDIT_CONF_ACCESS_PLACEHOLDER = 'edit_conf_access_placeholder';
-    public const COLOR_FORM_DESCRIPTION = 'color_form_description';
-    public const COLOR_FORM_HEADER = 'color_form_header';
-    public const VIEW_SCALE_SETTING_HEADER = 'view_scale_setting_header';
-    public const VIEW_SCALE_SETTING_HEADER_INFO = 'view_scale_setting_header_info';
-    public const VIEW_SCALE_SETTING_GROUP = 'view_scale_setting_group';
-    public const VIEW_SCALE_SETTING_OPTION_LEVEL = 'view_scale_setting_option_level';
-    public const VIEW_SCALE_SETTING_OPTION_POINTS = 'view_scale_setting_option_points';
-    public const VIEW_HIDDEN_LEGEND_LEVEL = "view_hidden_legend_level";
-    public const VIEW_HIDDEN_LEGEND_LEVEL_INFO = "view_hidden_legend_level_info";
-    public const EDIT_HIDDEN_LEGEND_LEVEL = 'edit_hidden_legend_level';
-    public const EDIT_CONF_SVY_QUEST_VALUE_RANGE = 'edit_conf_svy_quest_value_range';
-    public const EDIT_CONF_SCALE_SETTING_OPTION = 'edit_conf_scale_setting_option';
-    public const EDIT_CONF_SVY_QUESTIONS = 'edit_conf_svy_questions';
-    public const VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL = 'view_scale_setting_option_points_total';
-    public const EDIT_CONF_SKL_THRESHOLDS = 'edit_conf_skl_thresholds';
-    public const EDIT_CONF_SVY_QUESTIONS_SKL = 'edit_conf_svy_questions_skl';
-    public const EDIT_CONF_LEVELDATA = 'edit_conf_leveldata';
-    public const X_SCALE_TITLE = 'x_scale_title';
-    public const Y_SCALE_TITLE = 'y_scale_title';
-    public const EDIT_CONF_THRESHOLDS = 'edit_conf_thresholds';
-    public const EDIT_CONF_SI_PROC_LIMIT_INFO = 'edit_conf_si_proc_limit_info';
-    public const EDIT_CONF_FORM_HEADER = 'edit_conf_form_header';
-    public const EDIT_CONF_SVY_SELECTION_TITLE = 'edit_conf_svy_selection_title';
-    public const MAX_LEVEL_VALUE = 'max_level_value';
+    public const string MSG_OBJ_MODIFIED = "msg_obj_modified";
+
+    public const string CMD_INSERT = "cmd_insert";
+
+    public const string CMD_UPDATE = "update";
+
+    public const string CMD_CREATE = "create";
+
+    public const string CMD_CANCEL = "cancel";
+
+    public const string CMD_EDIT = "edit";
+
+    public const string CMD_SAVE = "save";
+
+    public const string MODE = "mode";
+
+    public const string EDIT_CONF_SI_PROC_LIMIT = "edit_conf_si_proc_limit";
+
+    public const string SETTINGS1 = "settings_1";
+
+    public const string SETTINGS2 = "settings_2";
+
+    public const string SINGLE_SI = "simo";
+
+    public const string MULTI_SI = "sile";
+
+    public const string EDIT_COLOR = "editcolor";
+
+    public const string UPDATE_COLOR = "updatecolor";
+
+    public const string EDIT_CONF_SVY_SELECTION = 'edit_conf_svy_selection';
+
+    public const string EDIT_CONF_SVY_SELECTION_INFO = 'edit_conf_svy_selection_info';
+
+    public const string EDIT_CONF_SI_COLOR = 'edit_conf_si_color';
+
+    public const string EDIT_CONF_SI_SKILLDATA = 'edit_conf_si_skilldata';
+
+    public const string VIEW_PARENT_TITLE = 'view_parent_title';
+
+    public const string VIEW_PARENT_TITLE_INFO = 'view_parent_title_info';
+
+    public const string VIEW_DIAGRAM_TITLE = 'view_diagram_title';
+
+    public const string VIEW_DIAGRAM_TITLE_INFO = 'view_diagram_title_info';
+
+    public const string EDIT_CONF_PARENT_TITLE = 'edit_conf_parent_title';
+
+    public const string EDIT_CONF_DIAGRAM_TITLE = 'edit_conf_diagram_title';
+
+    public const string FORM_COLOR_SECTION_HEADER = 'form_color_section_header';
+
+    public const string FORM_TEXT_SECTION_TITLE = 'form_text_section_title';
+
+    public const string FORM_TEXT_SECTION_INFO = 'form_text_section_info';
+
+    public const string FORM_COLOR_SECTION_HEADER_INFO = 'form_color_section_header_info';
+
+    public const string VIEW_ACCESS_PLACEHOLDER = 'view_access_placeholder';
+
+    public const string VIEW_ACCESS_PLACEHOLDER_INFO = 'view_access_placeholder_info';
+
+    public const string EDIT_CONF_ACCESS_PLACEHOLDER = 'edit_conf_access_placeholder';
+
+    public const string COLOR_FORM_DESCRIPTION = 'color_form_description';
+
+    public const string COLOR_FORM_HEADER = 'color_form_header';
+
+    public const string VIEW_SCALE_SETTING_HEADER = 'view_scale_setting_header';
+
+    public const string VIEW_SCALE_SETTING_HEADER_INFO = 'view_scale_setting_header_info';
+
+    public const string VIEW_SCALE_SETTING_GROUP = 'view_scale_setting_group';
+
+    public const string VIEW_SCALE_SETTING_OPTION_LEVEL = 'view_scale_setting_option_level';
+
+    public const string VIEW_SCALE_SETTING_OPTION_POINTS = 'view_scale_setting_option_points';
+
+    public const string VIEW_HIDDEN_LEGEND_LEVEL = "view_hidden_legend_level";
+
+    public const string VIEW_HIDDEN_LEGEND_LEVEL_INFO = "view_hidden_legend_level_info";
+
+    public const string EDIT_HIDDEN_LEGEND_LEVEL = 'edit_hidden_legend_level';
+
+    public const string EDIT_CONF_SVY_QUEST_VALUE_RANGE = 'edit_conf_svy_quest_value_range';
+
+    public const string EDIT_CONF_SCALE_SETTING_OPTION = 'edit_conf_scale_setting_option';
+
+    public const string EDIT_CONF_SVY_QUESTIONS = 'edit_conf_svy_questions';
+
+    public const string VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL = 'view_scale_setting_option_points_total';
+
+    public const string EDIT_CONF_SKL_THRESHOLDS = 'edit_conf_skl_thresholds';
+
+    public const string EDIT_CONF_SVY_QUESTIONS_SKL = 'edit_conf_svy_questions_skl';
+
+    public const string EDIT_CONF_LEVELDATA = 'edit_conf_leveldata';
+
+    public const string X_SCALE_TITLE = 'x_scale_title';
+
+    public const string Y_SCALE_TITLE = 'y_scale_title';
+
+    public const string EDIT_CONF_THRESHOLDS = 'edit_conf_thresholds';
+
+    public const string EDIT_CONF_SI_PROC_LIMIT_INFO = 'edit_conf_si_proc_limit_info';
+
+    public const string EDIT_CONF_FORM_HEADER = 'edit_conf_form_header';
+
+    public const string EDIT_CONF_SVY_SELECTION_TITLE = 'edit_conf_svy_selection_title';
+
+    public const string MAX_LEVEL_VALUE = 'max_level_value';
 
     protected ilTabsGUI $tabs;
+
     protected ilGlobalTemplateInterface $tpl;
+
     protected ilCtrlInterface $ctrl;
+
     protected ilLanguage $lng;
 
     public function __construct()

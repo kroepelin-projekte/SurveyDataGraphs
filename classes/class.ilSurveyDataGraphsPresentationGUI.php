@@ -243,12 +243,13 @@ class ilSurveyDataGraphsPresentationGUI
 
         $panel = $this->factory->panel()->standard(
             "Individuelle Ausprägungen",
-            $this->factory->legacy(
+            $this->factory->legacy()->content(
                 "<div style='overflow-y: scroll; height:400px;'>" .
                 $this->renderer->render($table->withData($data)) .
                 "</div>"
             )
         );
+
         return $this->renderer->render($panel);
     }
 }
