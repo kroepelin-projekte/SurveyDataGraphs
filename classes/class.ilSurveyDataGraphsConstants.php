@@ -2,5 +2,5 @@
 
 class ilSurveyDataGraphsConstants
 {
-    public const PLUGIN_DIRECTORY = "Customizing/global/plugins/Services/COPage/PageComponent/SurveyDataGraphs";
+    public const string PLUGIN_DIRECTORY = "Customizing/global/plugins/Services/COPage/PageComponent/SurveyDataGraphs";
 }

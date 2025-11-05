@@ -5,28 +5,45 @@ use ILIAS\Data\URI;
 class ilSurveyDataGraphsSkillUserData
 {
     private ilSurveyDataGraphsDB $data;
+
     private array $obj_ids;
+
     private mixed $colors;
+
     private mixed $base_skills;
+
     private mixed $dic;
+
     private mixed $questions;
+
     private mixed $progress_level;
+
     private mixed $ref_ids;
+
     private mixed $sum_thresholds;
+
     private mixed $level_data;
+
     private mixed $chart_scale_option;
+
     private mixed $chart_legend_hidden_level;
+
     private mixed $sdg_object_title;
+
     private mixed $chart_title;
+
     private mixed $placeholder;
+
     private string $x_scale_title;
+
     private string $y_scale_title;
+
     private mixed $thresholds;
+
     private mixed $max_level_value;
 
     public function __construct(array $a_properties)
     {
-
         global $DIC;
         $this->dic = $DIC;
 

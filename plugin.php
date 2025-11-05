@@ -1,4 +1,5 @@
 <?php
+
 $id = "sdg";
 $version = "4.0.0";
 $ilias_min_version = "11.0";

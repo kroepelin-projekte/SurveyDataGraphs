@@ -5,15 +5,24 @@ use ILIAS\UI\Renderer;
 
 class ilSurveyDataGraphsPresentationGUI
 {
-    public const SI_RESULT_ID_HEADER = "si_result_id_header";
-    public const SI_RESULT_DATE_HEADER = "si_result_date_header";
-    public const SI_RESULT_ANSWERED_HEADER = "si_result_answered_header";
+    public const string SI_RESULT_ID_HEADER = "si_result_id_header";
+
+    public const string SI_RESULT_DATE_HEADER = "si_result_date_header";
+
+    public const string SI_RESULT_ANSWERED_HEADER = "si_result_answered_header";
+
     private mixed $plugin;
+
     private static int $id_counter = 0;
+
     private mixed $properties;
+
     private ilSurveyDataGraphsSkillUserData $data;
+
     private Factory $factory;
+
     private Renderer $renderer;
+
     private ilLogger $logger;
 
     public function __construct($a_plugin, $a_properties)
@@ -25,7 +34,7 @@ class ilSurveyDataGraphsPresentationGUI
         $this->data = new ilSurveyDataGraphsSkillUserData($a_properties);
         $this->properties = $a_properties;
         $this->plugin = $a_plugin;
-        self::$id_counter ++;
+        self::$id_counter++;
     }
 
     /**
@@ -49,8 +58,8 @@ class ilSurveyDataGraphsPresentationGUI
         $tpl->setVariable("SI_RESULT_DATE_HEADER", $this->plugin->txt(self::SI_RESULT_DATE_HEADER));
         $tpl->setVariable("SI_RESULT_ANSWERED_HEADER", $this->plugin->txt(self::SI_RESULT_ANSWERED_HEADER));
 
-        foreach ($data as $item){
-            if(!empty($item['date'])){
+        foreach ($data as $item) {
+            if (!empty($item['date'])) {
                 $tpl->setCurrentBlock("si-result-list-row");
                 $tpl->setVariable("SI_RESULT_ID", ($item["id"]));
                 $tpl->setVariable("SI_RESULT_DATE", $item["date"]);
@@ -79,18 +88,18 @@ class ilSurveyDataGraphsPresentationGUI
         );
 
         $tpl->setVariable("CHART_TITLE", $chart_data['chart_title']);
-        $tpl->setVariable("CHARTID",  "sdg_" . self::$id_counter);
+        $tpl->setVariable("CHARTID", "sdg_" . self::$id_counter);
         $tpl->setVariable("CHART_DS_BORDER", 1);
         $tpl->setVariable("CHART_TYPE", $chart_data['chart_type']);
         $tpl->setVariable("INDEX_AXIS", $chart_data['index_axis']);
         $tpl->setVariable("SVY_RUNS", $chart_data['runs']);
 
-        if($chart_data['index_axis'] === 'x'){
+        if ($chart_data['index_axis'] === 'x') {
             $tpl->setVariable("CHART_Y_SCALE_MAX", $this->getChartScaleIndex());
             $tpl->setVariable("CHART_X_SCALE_MAX", count(json_decode($chart_data['runs'])));
             $tpl->setVariable("CHART_X_SCALE_MIN", 1);
             $tpl->setVariable("CHART_Y_SCALE_MIN", 1);
-        }elseif ($chart_data['index_axis'] === 'y'){
+        } elseif ($chart_data['index_axis'] === 'y') {
             $tpl->setVariable("CHART_Y_SCALE_MAX", 1);
             $tpl->setVariable("CHART_X_SCALE_MAX", $this->getChartScaleIndex());
             $tpl->setVariable("CHART_X_SCALE_MIN", 0);
@@ -101,33 +110,35 @@ class ilSurveyDataGraphsPresentationGUI
         $tpl->setVariable("CHART_X_SCALE_TITLE", $chart_data['x_scale_title']);
         $tpl->setVariable("LEGEND_DISPLAY", true);
 
-        if($this->data->getRequirements()){
+        if ($this->data->getRequirements()) {
             $count = 0;
-            foreach ($this->data->getBaseSkillData() as $skl_id => $skill){
+            foreach ($this->data->getBaseSkillData() as $skl_id => $skill) {
 
                 $this->logger->info(sprintf(
-                    "getChartTpl() 92: %s", $skl_id
+                    "getChartTpl() 92: %s",
+                    $skl_id
                 ));
 
                 $tpl->setCurrentBlock("CHART_DATASET");
                 $tpl->setVariable("CHART_DS_LABEL", $skill['title']);
                 $tpl->setVariable("CHART_BACKGROUND_COLOR", "white");
 
-                if(isset($chart_data['color'][$count])){
+                if (isset($chart_data['color'][$count])) {
                     $tpl->setVariable("CHART_DS_BACKGROUND_COLOR", $chart_data['color'][$count]);
                     $tpl->setVariable("CHART_DS_BORDER_COLOR", $chart_data['color'][$count]);
                 }
 
-                if(isset($chart_data['skl_data'][$skl_id])){
+                if (isset($chart_data['skl_data'][$skl_id])) {
                     $tpl->setVariable("CHART_DS_DATA", $chart_data['skl_data'][$skl_id]);
                     $this->logger->info(sprintf(
-                        "getChartTpl() 106: %s", $chart_data['skl_data'][$skl_id]
+                        "getChartTpl() 106: %s",
+                        $chart_data['skl_data'][$skl_id]
                     ));
                 }
 
-                if($count < $chart_data['hidden_data_label']){
+                if ($count < $chart_data['hidden_data_label']) {
                     $tpl->setVariable("HIDDEN_DATA_LABEL", false);
-                }else{
+                } else {
                     $tpl->setVariable("HIDDEN_DATA_LABEL", true);
                 }
 
@@ -136,8 +147,8 @@ class ilSurveyDataGraphsPresentationGUI
                 $tpl->parseCurrentBlock();
                 $count++;
             }
-        } else{
-            foreach ($this->data->getBaseSkillData() as $value){
+        } else {
+            foreach ($this->data->getBaseSkillData() as $value) {
                 $tpl->setCurrentBlock("CHART_DATASET");
                 $tpl->setVariable("CHART_DS_LABEL", $value['title']);
                 $tpl->setVariable("CHART_DS_DATA", "");
@@ -154,11 +165,11 @@ class ilSurveyDataGraphsPresentationGUI
     private function getChartScaleIndex(): int
     {
         $result = 0;
-        if ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_LEVEL){
+        if ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_LEVEL) {
             $result = $this->data->getMAXQuestLevel();
-        }elseif ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS){
+        } elseif ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS) {
             $result = $this->data->getMAXQuestValue();
-        }elseif ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL){
+        } elseif ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL) {
             $result = $this->data->getMAXQuestTotalValue();
         }
         return $result;
@@ -193,9 +204,9 @@ class ilSurveyDataGraphsPresentationGUI
             true
         );
 
-        if ($this->data->getRequirements()){
+        if ($this->data->getRequirements()) {
             $tpl->setVariable("SKL_NAV", $this->sklEvaluationTableGUI());
-        }else{
+        } else {
             $tpl_access->setVariable("ACCESS_ITEM", $this->data->getChartPlaceholder());
             $tpl->setVariable("ACCESS", $tpl_access->get());
         }
@@ -211,7 +222,7 @@ class ilSurveyDataGraphsPresentationGUI
     /**
      * @throws ilTemplateException
      */
-    private function sklEvaluationTableGUI() : string
+    private function sklEvaluationTableGUI(): string
     {
         $view_controls = array();
         $mapping_closure = function ($row, $record, $ui_factory, $environment) {

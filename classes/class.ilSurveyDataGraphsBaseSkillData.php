@@ -5,23 +5,31 @@ use ILIAS\DI\Container;
 class ilSurveyDataGraphsBaseSkillData
 {
     private array $colors;
+
     private array $ref_ids;
+
     private array $original_base_skill;
+
     private array $questions;
+
     private array $sum_original_thresholds;
+
     private array $original_thresholds;
 
     private Container $dic;
+
     private array $level_data;
+
     private int $max_level_score;
 
-    public function __construct(array $a_svy_ref_ids){
+    public function __construct(array $a_svy_ref_ids)
+    {
         global $DIC;
         $this->dic = $DIC;
         $this->ref_ids = $a_svy_ref_ids;
     }
 
-    public function validateSurveySelection() : bool|string
+    public function validateSurveySelection(): bool|string
     {
         $svy_base_skills = [];
         $original_base_skill = [];
@@ -37,33 +45,33 @@ class ilSurveyDataGraphsBaseSkillData
 
 
             $obj_id = ilObject::_lookupObjectId(intval($ref_id));
-            if(ilObjSurvey::_lookupType($obj_id) !== "svy"){
+            if (ilObjSurvey::_lookupType($obj_id) !== "svy") {
                 return "Survey Ref_Id: " . $ref_id . " not exist!";
             }
             $obj_survey = new ilObjSurvey($ref_id);
-            if($obj_survey->getOfflineStatus()){
+            if ($obj_survey->getOfflineStatus()) {
                 return " Ref_Id: " . $ref_id . " is offline";
             }
             $svy_skill_obj = new ilSurveySkill($obj_survey);
             $base_skill_item = $svy_skill_obj->getAllAssignedSkillsAsOptions();
-            ksort($base_skill_item, SORT_NUMERIC );
+            ksort($base_skill_item, SORT_NUMERIC);
 
-            if(empty($base_skill_item)){
+            if (empty($base_skill_item)) {
                 return " Ref_Id: " . $ref_id . " has no competencies!";
             }
 
 
             $svy_skill_threshold = new ilSurveySkillThresholds($obj_survey);
             $thresholds = $svy_skill_threshold->getThresholds();
-            if(empty($thresholds)){
+            if (empty($thresholds)) {
                 return " Ref_Id: " . $ref_id . " has no Competence Thresholds!";
             }
 
             $svy_base_skills[] = $base_skill_item;
 
-            if(isset($svy_base_skills)){
+            if (isset($svy_base_skills)) {
                 foreach ($svy_base_skills as $svy_base_skill) {
-                    if(!empty(array_diff_key($svy_base_skills[array_key_first($svy_base_skills)], $svy_base_skill))){
+                    if (!empty(array_diff_key($svy_base_skills[array_key_first($svy_base_skills)], $svy_base_skill))) {
                         return "Different Survey competencies!";
                     }
                     foreach ($svy_base_skills[array_key_first($svy_base_skills)] as $key => $value) {
@@ -71,13 +79,13 @@ class ilSurveyDataGraphsBaseSkillData
                         $skl_id = intval($ids[0]);
                         $tref_id = intval($ids[1]);
                         $lvl_data = $this->dic->skills()->internal()->repo()->getLevelRepo()->getLevelData($skl_id);
-                        if(!empty($lvl_data)){
+                        if (!empty($lvl_data)) {
                             $level_values[] = count($lvl_data);
                         }
                         foreach ($lvl_data as $level) {
                             $level_data[$skl_id][$level['id']] = $level;
 
-                            if(isset($thresholds[$level['id']])){
+                            if (isset($thresholds[$level['id']])) {
                                 $original_thresholds[$skl_id][$level['id']][$obj_id] = [
                                     "id" => $level['id'],
                                     "threshold" => array_sum($thresholds[$level['id']])
@@ -90,7 +98,7 @@ class ilSurveyDataGraphsBaseSkillData
 
                         }
                         $question_for_skill = $svy_skill_obj->getQuestionsForSkill($skl_id, $tref_id);
-                        if (empty($question_for_skill)){
+                        if (empty($question_for_skill)) {
                             return " Ref_Id: " . $ref_id . " has no Competence Items ";
                         }
                         $q_skill[$skl_id][$obj_id] = array_flip($question_for_skill);
@@ -122,47 +130,47 @@ class ilSurveyDataGraphsBaseSkillData
         return true;
     }
 
-    public function getOriginalSvyBaseSkills() : array
+    public function getOriginalSvyBaseSkills(): array
     {
         return $this->original_base_skill;
     }
 
-    public function getSumThresholds() : array
+    public function getSumThresholds(): array
     {
         return $this->sum_original_thresholds;
     }
 
-    public function getThresholds() : array
+    public function getThresholds(): array
     {
         return $this->original_thresholds;
     }
 
-    public function getQuestions() : array
+    public function getQuestions(): array
     {
         return $this->questions;
     }
 
-    public function getColors() : array
+    public function getColors(): array
     {
         return $this->colors;
     }
 
-    public function getLevelData() : array
+    public function getLevelData(): array
     {
         return $this->level_data;
     }
 
-    public function getMAXLevelValue() : int
+    public function getMAXLevelValue(): int
     {
         return $this->max_level_score;
     }
 
-    private function setColors(int $a_number) : void
+    private function setColors(int $a_number): void
     {
         $result = [];
         $colors = $this->digikosStyleColors();
         for ($i = 0; $i < $a_number; $i++) {
-            foreach ($colors as $color){
+            foreach ($colors as $color) {
                 $result[] = $color;
             }
         }

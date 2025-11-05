@@ -169,11 +169,10 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
     public function create(): void
     {
         $form = $this->initForm(true);
-        if ($form->checkInput())
-        {
+        if ($form->checkInput()) {
             $skilldata = new ilSurveyDataGraphsBaseSkillData($form->getInput(self::EDIT_CONF_SVY_SELECTION));
             $input_validation = $skilldata->validateSurveySelection();
-            if(is_bool($input_validation)){
+            if (is_bool($input_validation)) {
                 $properties = $this->getProperties();
                 $properties[self::EDIT_CONF_SVY_SELECTION] = json_encode($form->getInput(self::EDIT_CONF_SVY_SELECTION));
                 $properties[self::EDIT_CONF_SI_PROC_LIMIT] = $form->getInput(self::EDIT_CONF_SI_PROC_LIMIT);
@@ -192,12 +191,11 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
                 $properties[self::EDIT_HIDDEN_LEGEND_LEVEL] = count($skilldata->getOriginalSvyBaseSkills());
                 $properties[self::MAX_LEVEL_VALUE] = $skilldata->getMAXLevelValue();
 
-                if ($this->createElement($properties))
-                {
+                if ($this->createElement($properties)) {
                     $this->tpl->setOnScreenMessage("success", $this->lng->txt(self::MSG_OBJ_MODIFIED), true);
                     $this->returnToParent();
                 }
-            }else{
+            } else {
                 $this->tpl->setOnScreenMessage("failure", $input_validation, true);
             }
         }
@@ -228,12 +226,10 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
     public function update(): void
     {
         $form = $this->initForm();
-        if($form->checkInput())
-        {
+        if ($form->checkInput()) {
             $properties = $this->getProperties();
             $properties[self::EDIT_CONF_SI_PROC_LIMIT] = $form->getInput(self::EDIT_CONF_SI_PROC_LIMIT);
-            if ($this->updateElement($properties))
-            {
+            if ($this->updateElement($properties)) {
                 $this->tpl->setOnScreenMessage("success", $this->lng->txt(self::MSG_OBJ_MODIFIED), true);
             }
         }
@@ -247,12 +243,11 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
     public function updateColor(): void
     {
         $form = $this->initColorForm();
-        if ($form->checkInput())
-        {
+        if ($form->checkInput()) {
             $properties = $this->getProperties();
             $colors = json_decode($properties[self::EDIT_CONF_SI_COLOR]);
-            for ($i = 0; $i < count($colors); $i++){
-                $colors[$i] = "#".$form->getInput("cp".($i));
+            for ($i = 0; $i < count($colors); $i++) {
+                $colors[$i] = "#" . $form->getInput("cp" . ($i));
             }
             $properties[self::EDIT_CONF_SI_COLOR] = json_encode($colors);
             $properties[self::EDIT_CONF_PARENT_TITLE] = $form->getInput(self::VIEW_PARENT_TITLE);
@@ -263,8 +258,7 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
             $properties[self::X_SCALE_TITLE] = $form->getInput(self::X_SCALE_TITLE);
             $properties[self::Y_SCALE_TITLE] = $form->getInput(self::Y_SCALE_TITLE);
 
-            if ($this->updateElement($properties))
-            {
+            if ($this->updateElement($properties)) {
                 $this->tpl->setOnScreenMessage("success", $this->lng->txt(self::MSG_OBJ_MODIFIED), true);
                 $this->returnToParent();
             }
@@ -300,23 +294,19 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $form->addItem($svy_ref_ids);
         $form->addItem($processing_limit);
 
-        if (!$a_create)
-        {
+        if (!$a_create) {
             $prop = $this->getProperties();
             $processing_limit->setValue($prop[self::EDIT_CONF_SI_PROC_LIMIT]);
             $svy_ref_ids->setValue(json_decode($prop[self::EDIT_CONF_SVY_SELECTION])[0]);
             $svy_ref_ids->setMultiValues(json_decode($prop[self::EDIT_CONF_SVY_SELECTION]));
             $svy_ref_ids->setTitle($this->plugin->txt(self::EDIT_CONF_SVY_SELECTION_TITLE));
         }
-        if ($a_create)
-        {
+        if ($a_create) {
             //$this->addCreationButton($form);
             $form->addCommandButton(self::CMD_CANCEL, $this->lng->txt(self::CMD_CANCEL));
             $form->addCommandButton(self::CMD_CREATE, $this->lng->txt(self::CMD_SAVE));
             $form->setTitle($this->getPlugin()->txt(self::CMD_INSERT));
-        }
-        else
-        {
+        } else {
             $svy_ref_ids->setDisabled(true);
             $form->addCommandButton(self::CMD_UPDATE, $this->lng->txt(self::CMD_SAVE));
             $form->addCommandButton(self::CMD_CANCEL, $this->lng->txt(self::CMD_CANCEL));
@@ -359,12 +349,12 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $access_placeholder->setInputType('text');
         $form->addItem($access_placeholder);
 
-        $x_scale_title = new ilTextInputGUI($this->plugin->txt(self::X_SCALE_TITLE),self::X_SCALE_TITLE);
+        $x_scale_title = new ilTextInputGUI($this->plugin->txt(self::X_SCALE_TITLE), self::X_SCALE_TITLE);
         $x_scale_title->setValue($properties[self::X_SCALE_TITLE] ?? 'x');
         $x_scale_title->setInputType('text');
         $form->addItem($x_scale_title);
 
-        $y_scale_title = new ilTextInputGUI($this->plugin->txt(self::Y_SCALE_TITLE),self::Y_SCALE_TITLE);
+        $y_scale_title = new ilTextInputGUI($this->plugin->txt(self::Y_SCALE_TITLE), self::Y_SCALE_TITLE);
         $y_scale_title->setValue($properties[self::Y_SCALE_TITLE] ?? 'y');
         $y_scale_title->setInputType('text');
         $form->addItem($y_scale_title);
@@ -374,18 +364,24 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $scale_header->setInfo($this->plugin->txt(self::VIEW_SCALE_SETTING_HEADER_INFO));
         $form->addItem($scale_header);
 
-        $scale_option_level = new ilRadioOption($this->plugin->txt(
-            self::VIEW_SCALE_SETTING_OPTION_LEVEL),
+        $scale_option_level = new ilRadioOption(
+            $this->plugin->txt(
+                self::VIEW_SCALE_SETTING_OPTION_LEVEL
+            ),
             self::VIEW_SCALE_SETTING_OPTION_LEVEL
         );
 
-        $scale_option_points = new ilRadioOption($this->plugin->txt(
-            self::VIEW_SCALE_SETTING_OPTION_POINTS),
+        $scale_option_points = new ilRadioOption(
+            $this->plugin->txt(
+                self::VIEW_SCALE_SETTING_OPTION_POINTS
+            ),
             self::VIEW_SCALE_SETTING_OPTION_POINTS
         );
 
-        $scale_option_points_total = new ilRadioOption($this->plugin->txt(
-            self::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL),
+        $scale_option_points_total = new ilRadioOption(
+            $this->plugin->txt(
+                self::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL
+            ),
             self::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL
         );
 
@@ -399,7 +395,7 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $form->addItem($scale_option_group);
 
         $skill_data = json_decode($properties[self::EDIT_CONF_SI_SKILLDATA], true);
-        $sd_title = array_column($skill_data,"title");
+        $sd_title = array_column($skill_data, "title");
 
         $hidden_legend_level = new ilNumberInputGUI($this->plugin->txt(self::VIEW_HIDDEN_LEGEND_LEVEL), self::VIEW_HIDDEN_LEGEND_LEVEL);
         $hidden_legend_level->setInfo($this->plugin->txt(self::VIEW_HIDDEN_LEGEND_LEVEL_INFO));
@@ -417,8 +413,8 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
 
         $colors = json_decode($properties['edit_conf_si_color']);
 
-        for($i = 0; $i < count($sd_title); $i++){
-            $cp = new ilColorPickerInputGUI($sd_title[$i], "cp".($i));
+        for ($i = 0; $i < count($sd_title); $i++) {
+            $cp = new ilColorPickerInputGUI($sd_title[$i], "cp" . ($i));
             $cp->setValue($colors[$i]);
             $form->addItem($cp);
         }
@@ -445,14 +441,16 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
     public function setTabs(string $a_active): void
     {
         $this->tabs->addTab(
-            self::CMD_EDIT, $this->plugin->txt(self::SETTINGS1),
+            self::CMD_EDIT,
+            $this->plugin->txt(self::SETTINGS1),
             $this->ctrl->getLinkTarget($this, self::CMD_EDIT)
         );
         $properties = $this->getProperties();
-        if(isset($properties[self::EDIT_CONF_SVY_SELECTION])){
+        if (isset($properties[self::EDIT_CONF_SVY_SELECTION])) {
             $this->tabs->addTab(
-                self::EDIT_COLOR, $this->plugin->txt(self::SETTINGS2),
-                $this->ctrl->getLinkTarget($this,self::EDIT_COLOR)
+                self::EDIT_COLOR,
+                $this->plugin->txt(self::SETTINGS2),
+                $this->ctrl->getLinkTarget($this, self::EDIT_COLOR)
             );
         }
         $this->tabs->activateTab($a_active);
@@ -462,7 +460,7 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
      * @throws ilDatabaseException
      * @throws \ilCtrlException
      */
-    public function editcolor() :void
+    public function editcolor(): void
     {
         global $tpl;
 
