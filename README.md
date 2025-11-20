@@ -13,7 +13,7 @@ Following features are integrated:
 
 ## Requirements
 
-### (* ILIAS 10.0 - 10.999)
+### (* ILIAS 11.0 - 11.999)
 
 #### (* PHP >=8.2)
 
