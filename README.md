@@ -1,4 +1,4 @@
-[![Minimum PHP Version](https://img.shields.io/badge/php->=8.1-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php->=8.4-8892BF.svg)](https://php.net/)
 
 # SurveyDataGraphs
 
@@ -13,9 +13,9 @@ Following features are integrated:
 
 ## Requirements
 
-### (* ILIAS 11.0 - 11.999)
+### (* ILIAS 12.0 - 12.999)
 
-#### (* PHP >=8.2)
+#### (* PHP >=8.4)
 
 ## Installation
 
