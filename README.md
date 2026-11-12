@@ -22,8 +22,8 @@ Following features are integrated:
 Start at your ILIAS root directory:
 
 ```bash
-mkdir -p Customizing/global/plugins/Services/COPage/PageComponent/
-cd Customizing/global/plugins/Services/COPage/PageComponent/
+mkdir -p public/Customizing/global/plugins/Services/COPage/PageComponent/
+cd public/Customizing/global/plugins/Services/COPage/PageComponent/
 git clone https://github.com/kroepelin-projekte/SurveyDataGraphs.git
 ```
 
@@ -32,7 +32,7 @@ git clone https://github.com/kroepelin-projekte/SurveyDataGraphs.git
 After that, the composer dependencies need to be installed:
 
 ```bash
-cd Customizing/global/plugins/Services/COPage/PageComponent/SurveyDataGraphs
+cd public/Customizing/global/plugins/Services/COPage/PageComponent/SurveyDataGraphs
 composer install --no-dev
 ```
 For development, omit the --no-dev command. 
@@ -42,5 +42,5 @@ Install, activate the plugin in the ILIAS Plugin Administration.
 
 ## Maintenance
 
-Kröpelin Projekt Gmbh, support@kroepelin-projekte.de
-This project is maintained by Kröpelin Projekt Gmbh (kpg), DE-Berlin (https://kroepelin-projekte.de). 
+Kröpelin Projekt GmbH, support@kroepelin-projekte.de
+This project is maintained by Kröpelin Projekt GmbH (kpg), DE-Berlin (https://kroepelin-projekte.de). 

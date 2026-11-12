@@ -42,10 +42,13 @@ class ilSurveyDataGraphsSkillUserData
 
     private mixed $max_level_value;
 
-    public function __construct(array $a_properties)
+    private ilPlugin $plugin;
+
+    public function __construct(array $a_properties, ilPlugin $a_plugin)
     {
         global $DIC;
         $this->dic = $DIC;
+        $this->plugin = $a_plugin;
 
         $this->base_skills = json_decode($a_properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SI_SKILLDATA], true);
         $this->level_data = json_decode($a_properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_LEVELDATA], true);
@@ -202,7 +205,7 @@ class ilSurveyDataGraphsSkillUserData
                             "answers" => 0,
                             "points" => 'NaN',
                             "points_answer" => 'NaN',
-                            "level_title" => "ohne Wertung",
+                            "level_title" => $this->plugin->txt("without_rating"),
                             "level" => 'NaN',
                         ];
                         break;
@@ -240,7 +243,7 @@ class ilSurveyDataGraphsSkillUserData
         return [
             "chart_title" => $this->chart_title,
             "chart_type" => count($this->obj_ids) === 1 ? 'bar' : 'line',
-            "runs" => count($this->obj_ids) === 1 ? json_encode([""]) : json_encode($this->getChartRunData()),
+            "runs" => count($this->obj_ids) === 1 ? [""] : $this->getChartRunData(),
             "index_axis" => count($this->obj_ids) === 1 ? 'y' : 'x',
             "skl_data" => $this->getChartDSData(),
             "skl_max_value" => !empty($this->getChartDSData()) ? max($this->getChartDSData()) : 0,
@@ -346,7 +349,7 @@ class ilSurveyDataGraphsSkillUserData
                         "questions" => $svy_answer_values[$skl_id]['questions'],
                         "answers" => $svy_answer_values[$skl_id]['answers'],
                         "points" => $points,
-                        "level_title" => "ohne Wertung",
+                        "level_title" => $this->plugin->txt("without_rating"),
                         "level" => 0,
                         "description" => "",
                         "img" => $this->skillLevelImg(intval($lvl_datails['nr'])),
@@ -400,11 +403,9 @@ class ilSurveyDataGraphsSkillUserData
                 $resource_link_list[] = ['link' => $r_link['rep_ref_id']];
             }
             $skill_list[] = [
-                'type' => 'Single Choice Frage',
                 'img' => $this->skillLevelImg($level['level']),
                 'img2' => $this->skillColorIcon($level['level']),
                 'skill_title' => $level['title'],
-                'skill_txt' => 'Wie ausgeprägt ist ' . $level['title'] . ' des / der Studierenden?',
                 'description' => $level['description'],
                 'level' => $level['level'],
                 'level_title' => $level['level_title'],
@@ -427,7 +428,7 @@ class ilSurveyDataGraphsSkillUserData
         $skill_result = function ($links) {
             $result = "";
             if (empty($links)) {
-                $result = 'Keine Lernmaterialien vorhanden';
+                $result = htmlspecialchars($this->plugin->txt("no_learning_material"), ENT_QUOTES, 'UTF-8');
             } else {
                 foreach ($links as $link) {
                     $result .= '<div style="padding-left: 45px">' . $this->getSkillResourceLinks($link['link']) . '</div>';

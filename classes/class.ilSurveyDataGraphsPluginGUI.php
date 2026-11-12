@@ -176,9 +176,9 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
                 $properties = $this->getProperties();
                 $properties[self::EDIT_CONF_SVY_SELECTION] = json_encode($form->getInput(self::EDIT_CONF_SVY_SELECTION));
                 $properties[self::EDIT_CONF_SI_PROC_LIMIT] = $form->getInput(self::EDIT_CONF_SI_PROC_LIMIT);
-                $properties[self::EDIT_CONF_PARENT_TITLE] = "Deine persönlichen Ergebnisse aus SIMo im Überblick";
-                $properties[self::EDIT_CONF_DIAGRAM_TITLE] = "Deine Studienmotivation";
-                $properties[self::EDIT_CONF_ACCESS_PLACEHOLDER] = "Nach der Bearbeitung aller Umfragen findest du hier deinen Lernverlauf.";
+                $properties[self::EDIT_CONF_PARENT_TITLE] = $this->getPlugin()->txt("default_parent_title");
+                $properties[self::EDIT_CONF_DIAGRAM_TITLE] = $this->getPlugin()->txt("default_diagram_title");
+                $properties[self::EDIT_CONF_ACCESS_PLACEHOLDER] = $this->getPlugin()->txt("default_access_placeholder");
                 $properties[self::X_SCALE_TITLE] = "x";
                 $properties[self::Y_SCALE_TITLE] = "y";
                 $properties[self::EDIT_CONF_SI_SKILLDATA] = json_encode($skilldata->getOriginalSvyBaseSkills());
@@ -414,7 +414,7 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $colors = json_decode($properties['edit_conf_si_color']);
 
         for ($i = 0; $i < count($sd_title); $i++) {
-            $cp = new ilColorPickerInputGUI($sd_title[$i], "cp" . ($i));
+            $cp = new ilColorPickerInputGUI(htmlspecialchars((string) $sd_title[$i], ENT_QUOTES, 'UTF-8'), "cp" . ($i));
             $cp->setValue($colors[$i]);
             $form->addItem($cp);
         }
@@ -427,11 +427,19 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
     }
 
     /**
+     * The core reads the properties back from the XSL output
+     * (ilPCPlugged::modifyPageContentPostXsl), so they arrive HTML-encoded.
+     * They are decoded once here and escaped again on output.
+     *
      * @throws \ilTemplateException
      */
     public function getElementHTML(string $a_mode, array $a_properties, string $plugin_version): string
     {
-        $presentation = new ilSurveyDataGraphsPresentationGUI($this->plugin, $a_properties);
+        $properties = array_map(
+            static fn($value) => is_string($value) ? html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8') : $value,
+            $a_properties
+        );
+        $presentation = new ilSurveyDataGraphsPresentationGUI($this->plugin, $properties);
         return $presentation->getContentTpl();
     }
 

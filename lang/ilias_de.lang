@@ -57,3 +57,14 @@ view_hidden_legend_level#:#Sichtbarkeit Ausprägung
 view_hidden_legend_level_info#:#Anzahl der dargestellten Kompetenzen innerhalb des Graphs sowie der Graph-Legende
 x_scale_title#:#Titel der x-Achse
 y_scale_title#:#Titel der y-Achse
+level#:#Ausprägung
+answered#:#Beantwortet
+answered_of_questions#:#%d von %d
+individual_levels#:#Individuelle Ausprägungen
+without_rating#:#ohne Wertung
+no_learning_material#:#Keine Lernmaterialien vorhanden
+default_parent_title#:#Deine persönlichen Ergebnisse aus SIMo im Überblick
+default_diagram_title#:#Deine Studienmotivation
+default_access_placeholder#:#Nach der Bearbeitung aller Umfragen findest du hier deinen Lernverlauf.
+chart_aria_label#:#Diagramm der Umfrageergebnisse
+chart_fallback#:#Dein Browser kann das Diagramm nicht anzeigen.
