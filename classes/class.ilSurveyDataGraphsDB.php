@@ -6,6 +6,14 @@ class ilSurveyDataGraphsDB
 
     private int $user_id;
 
+    /**
+     * Query results per request. Several elements on one page and repeated
+     * calls within one element read the same rows, so each query runs once.
+     *
+     * @var array<string, mixed>
+     */
+    private static array $cache = [];
+
     public function __construct()
     {
         global $DIC;
@@ -13,7 +21,27 @@ class ilSurveyDataGraphsDB
         $this->user_id = $DIC->user()->getId();
     }
 
+    private function cached(string $a_key, callable $a_query): mixed
+    {
+        $key = $this->user_id . ':' . $a_key;
+        if (!array_key_exists($key, self::$cache)) {
+            self::$cache[$key] = $a_query();
+        }
+        return self::$cache[$key];
+    }
+
+    /**
+     * @return list<int|string>
+     */
     public function getSvyQuestions(int $a_obj_id): array
+    {
+        return $this->cached(__FUNCTION__ . ':' . $a_obj_id, fn(): array => $this->querySvyQuestions($a_obj_id));
+    }
+
+    /**
+     * @return list<int|string>
+     */
+    private function querySvyQuestions(int $a_obj_id): array
     {
         $sql = sprintf(
             "SELECT svy_question.question_id FROM svy_question " .
@@ -29,7 +57,18 @@ class ilSurveyDataGraphsDB
         return $result;
     }
 
+    /**
+     * @return list<int|string>
+     */
     public function getSvyAnswers(int $a_obj_id): array
+    {
+        return $this->cached(__FUNCTION__ . ':' . $a_obj_id, fn(): array => $this->querySvyAnswers($a_obj_id));
+    }
+
+    /**
+     * @return list<int|string>
+     */
+    private function querySvyAnswers(int $a_obj_id): array
     {
         $sql = sprintf(
             "SELECT answer_id FROM svy_answer " .
@@ -49,6 +88,11 @@ class ilSurveyDataGraphsDB
     }
 
     public function getFinishedSvyTimestamp(int $a_obj_id): string
+    {
+        return $this->cached(__FUNCTION__ . ':' . $a_obj_id, fn(): string => $this->queryFinishedSvyTimestamp($a_obj_id));
+    }
+
+    private function queryFinishedSvyTimestamp(int $a_obj_id): string
     {
         $sql = sprintf(
             "SELECT svf.tstamp, svsv.obj_fi FROM svy_finished AS svf " .
@@ -83,14 +127,29 @@ class ilSurveyDataGraphsDB
     {
         $svy_fin = array();
         foreach ($a_svy_obj_ids as $a_svy_obj_id) {
-            if (ilObjSurveyAccess::_lookupFinished($a_svy_obj_id, $this->user_id)) {
+            $finished = $this->cached(
+                'finished:' . $a_svy_obj_id,
+                fn(): bool => (bool) ilObjSurveyAccess::_lookupFinished((int) $a_svy_obj_id, $this->user_id)
+            );
+            if ($finished) {
                 $svy_fin[] = $a_svy_obj_id;
             }
         }
         return $svy_fin;
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getFinishedAnswerSkillData(int $a_obj_id): array
+    {
+        return $this->cached(__FUNCTION__ . ':' . $a_obj_id, fn(): array => $this->queryFinishedAnswerSkillData($a_obj_id));
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    private function queryFinishedAnswerSkillData(int $a_obj_id): array
     {
         $sql = sprintf(
             "SELECT quest_skill.base_skill_id, SUM(answer.value+1) AS sum_skill_value, COUNT(answer.question_fi) AS count_answers FROM svy_question AS question " .
@@ -127,7 +186,18 @@ class ilSurveyDataGraphsDB
         return $result;
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getBaseSkillAnswers(int $a_obj_id, int $a_base_skill_id): array
+    {
+        return $this->cached(__FUNCTION__ . ':' . $a_obj_id . ':' . $a_base_skill_id, fn(): array => $this->queryBaseSkillAnswers($a_obj_id, $a_base_skill_id));
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    private function queryBaseSkillAnswers(int $a_obj_id, int $a_base_skill_id): array
     {
         $sql = sprintf(
             "SELECT question_fi, (svy_answer.value+1) AS points FROM svy_answer " .
@@ -152,7 +222,18 @@ class ilSurveyDataGraphsDB
         return $result;
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getSkillResourceRefId(int $a_level_id): array
+    {
+        return $this->cached(__FUNCTION__ . ':' . $a_level_id, fn(): array => $this->querySkillResourceRefId($a_level_id));
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    private function querySkillResourceRefId(int $a_level_id): array
     {
         $sql = sprintf(
             "SELECT DISTINCT rep_ref_id FROM skl_skill_resource " .
@@ -170,6 +251,11 @@ class ilSurveyDataGraphsDB
 
     public function getMAXQuestionValue(int $a_obj_id): int
     {
+        return $this->cached(__FUNCTION__ . ':' . $a_obj_id, fn(): int => $this->queryMAXQuestionValue($a_obj_id));
+    }
+
+    private function queryMAXQuestionValue(int $a_obj_id): int
+    {
         $sql = sprintf(
             "SELECT MAX(svy_variable.value1) as max FROM svy_variable " .
             "JOIN svy_question ON svy_variable.question_fi = svy_question.question_id " .
@@ -181,7 +267,7 @@ class ilSurveyDataGraphsDB
         while ($row = $query->fetchRow()) {
             $result = $row;
         }
-        return intval($result['max']);
+        return (int) ($result['max'] ?? 0);
     }
 
     public function getMAXTotalQuestValue(int $a_obj_id): int

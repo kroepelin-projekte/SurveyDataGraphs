@@ -21,8 +21,6 @@ class ilSurveyDataGraphsPresentationGUI
 
     private static bool $js_initialised = false;
 
-    private mixed $properties;
-
     private ilSurveyDataGraphsSkillUserData $data;
 
     private Factory $factory;
@@ -38,7 +36,6 @@ class ilSurveyDataGraphsPresentationGUI
         $this->factory = $DIC->ui()->factory();
         $this->renderer = $DIC->ui()->renderer();
         $this->data = new ilSurveyDataGraphsSkillUserData($a_properties, $a_plugin);
-        $this->properties = $a_properties;
         $this->plugin = $a_plugin;
         self::$id_counter++;
     }
@@ -241,15 +238,12 @@ class ilSurveyDataGraphsPresentationGUI
 
     private function getChartScaleIndex(): int
     {
-        $result = 0;
-        if ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_LEVEL) {
-            $result = $this->data->getMAXQuestLevel();
-        } elseif ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS) {
-            $result = $this->data->getMAXQuestValue();
-        } elseif ($this->properties[ilSurveyDataGraphsPluginGUI::EDIT_CONF_SCALE_SETTING_OPTION] === ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL) {
-            $result = $this->data->getMAXQuestTotalValue();
-        }
-        return $result;
+        return match ($this->data->getChartScaleOption()) {
+            ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_LEVEL => $this->data->getMAXQuestLevel(),
+            ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS => $this->data->getMAXQuestValue(),
+            ilSurveyDataGraphsPluginGUI::VIEW_SCALE_SETTING_OPTION_POINTS_TOTAL => $this->data->getMAXQuestTotalValue(),
+            default => 0,
+        };
     }
 
     /**
@@ -298,6 +292,16 @@ class ilSurveyDataGraphsPresentationGUI
             true
         );
 
+        $tpl->setVariable("TPL_CLASS", $this->escape($this->data->getTplClassname()));
+        $tpl->setVariable("TPL_TITLE", $this->escape($this->data->getTplTitle()));
+
+        if (!$this->data->isConfigurationValid()) {
+            $tpl_access->setVariable("ACCESS_MODIFIER", " sdg-access-info-inline");
+            $tpl_access->setVariable("ACCESS_ITEM", $this->escape($this->plugin->txt("configuration_incomplete")));
+            $tpl->setVariable("ACCESS", $tpl_access->get());
+            return $tpl->get();
+        }
+
         if ($this->data->getRequirements()) {
             $tpl->setVariable("SKL_NAV", $this->sklEvaluationTableGUI());
         } else {
@@ -305,8 +309,6 @@ class ilSurveyDataGraphsPresentationGUI
             $tpl->setVariable("ACCESS", $tpl_access->get());
         }
 
-        $tpl->setVariable("TPL_CLASS", $this->escape($this->data->getTplClassname()));
-        $tpl->setVariable("TPL_TITLE", $this->escape($this->data->getTplTitle()));
         $tpl->setVariable("CHART_TPL", $this->getChartTpl());
         $tpl->setVariable("SI_RESULT_LIST_TBL", $this->svyDetailTableTpl());
 

@@ -68,3 +68,5 @@ default_diagram_title#:#Deine Studienmotivation
 default_access_placeholder#:#Nach der Bearbeitung aller Umfragen findest du hier deinen Lernverlauf.
 chart_aria_label#:#Diagramm der Umfrageergebnisse
 chart_fallback#:#Dein Browser kann das Diagramm nicht anzeigen.
+configuration_incomplete#:#Dieses Element kann nicht angezeigt werden, weil seine Einstellungen unvollständig sind oder eine Umfrage nicht mehr existiert. Bitte das Element neu anlegen.
+msg_no_levels#:#Die Kompetenzen der Umfrage haben keine Ausprägungen.

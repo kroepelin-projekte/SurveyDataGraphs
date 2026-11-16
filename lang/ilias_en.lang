@@ -68,3 +68,5 @@ default_diagram_title#:#Your study motivation
 default_access_placeholder#:#Once you have completed all surveys, your learning progress will appear here.
 chart_aria_label#:#Survey results chart
 chart_fallback#:#Your browser does not support the canvas element.
+configuration_incomplete#:#This element cannot be shown because its settings are incomplete or a survey no longer exists. Please create the element again.
+msg_no_levels#:#The survey competences have no levels.

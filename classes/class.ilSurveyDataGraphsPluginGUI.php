@@ -196,6 +196,9 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
                     $this->returnToParent();
                 }
             } else {
+                if ($input_validation === ilSurveyDataGraphsBaseSkillData::MSG_NO_LEVELS) {
+                    $input_validation = $this->getPlugin()->txt($input_validation);
+                }
                 $this->tpl->setOnScreenMessage("failure", $input_validation, true);
             }
         }
@@ -245,7 +248,7 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $form = $this->initColorForm();
         if ($form->checkInput()) {
             $properties = $this->getProperties();
-            $colors = json_decode($properties[self::EDIT_CONF_SI_COLOR]);
+            $colors = $this->decodeProperty($properties, self::EDIT_CONF_SI_COLOR);
             for ($i = 0; $i < count($colors); $i++) {
                 $colors[$i] = "#" . $form->getInput("cp" . ($i));
             }
@@ -296,9 +299,10 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
 
         if (!$a_create) {
             $prop = $this->getProperties();
-            $processing_limit->setValue($prop[self::EDIT_CONF_SI_PROC_LIMIT]);
-            $svy_ref_ids->setValue(json_decode($prop[self::EDIT_CONF_SVY_SELECTION])[0]);
-            $svy_ref_ids->setMultiValues(json_decode($prop[self::EDIT_CONF_SVY_SELECTION]));
+            $selection = $this->decodeProperty($prop, self::EDIT_CONF_SVY_SELECTION);
+            $processing_limit->setValue((string) ($prop[self::EDIT_CONF_SI_PROC_LIMIT] ?? '100'));
+            $svy_ref_ids->setValue((string) ($selection[0] ?? ''));
+            $svy_ref_ids->setMultiValues($selection);
             $svy_ref_ids->setTitle($this->plugin->txt(self::EDIT_CONF_SVY_SELECTION_TITLE));
         }
         if ($a_create) {
@@ -333,19 +337,19 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
 
         $parent_titel = new ilTextInputGUI($this->plugin->txt(self::VIEW_PARENT_TITLE), self::VIEW_PARENT_TITLE);
         $parent_titel->setInfo($this->plugin->txt(self::VIEW_PARENT_TITLE_INFO));
-        $parent_titel->setValue($properties[self::EDIT_CONF_PARENT_TITLE]);
+        $parent_titel->setValue((string) ($properties[self::EDIT_CONF_PARENT_TITLE] ?? ''));
         $parent_titel->setInputType('text');
         $form->addItem($parent_titel);
 
         $diagram_titel = new ilTextInputGUI($this->plugin->txt(self::VIEW_DIAGRAM_TITLE), self::VIEW_DIAGRAM_TITLE);
         $diagram_titel->setInfo($this->plugin->txt(self::VIEW_DIAGRAM_TITLE_INFO));
-        $diagram_titel->setValue($properties[self::EDIT_CONF_DIAGRAM_TITLE]);
+        $diagram_titel->setValue((string) ($properties[self::EDIT_CONF_DIAGRAM_TITLE] ?? ''));
         $diagram_titel->setInputType('text');
         $form->addItem($diagram_titel);
 
         $access_placeholder = new ilTextInputGUI($this->plugin->txt(self::VIEW_ACCESS_PLACEHOLDER), self::VIEW_ACCESS_PLACEHOLDER);
         $access_placeholder->setInfo($this->plugin->txt(self::VIEW_ACCESS_PLACEHOLDER_INFO));
-        $access_placeholder->setValue($properties[self::EDIT_CONF_ACCESS_PLACEHOLDER]);
+        $access_placeholder->setValue((string) ($properties[self::EDIT_CONF_ACCESS_PLACEHOLDER] ?? ''));
         $access_placeholder->setInputType('text');
         $form->addItem($access_placeholder);
 
@@ -391,10 +395,10 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $scale_option_group->addOption($scale_option_level);
         $scale_option_group->addOption($scale_option_points);
         $scale_option_group->addOption($scale_option_points_total);
-        $scale_option_group->setValue($properties[self::EDIT_CONF_SCALE_SETTING_OPTION]);
+        $scale_option_group->setValue((string) ($properties[self::EDIT_CONF_SCALE_SETTING_OPTION] ?? self::VIEW_SCALE_SETTING_OPTION_LEVEL));
         $form->addItem($scale_option_group);
 
-        $skill_data = json_decode($properties[self::EDIT_CONF_SI_SKILLDATA], true);
+        $skill_data = $this->decodeProperty($properties, self::EDIT_CONF_SI_SKILLDATA);
         $sd_title = array_column($skill_data, "title");
 
         $hidden_legend_level = new ilNumberInputGUI($this->plugin->txt(self::VIEW_HIDDEN_LEGEND_LEVEL), self::VIEW_HIDDEN_LEGEND_LEVEL);
@@ -411,11 +415,11 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $color_header->setInfo($this->plugin->txt(self::FORM_COLOR_SECTION_HEADER_INFO));
         $form->addItem($color_header);
 
-        $colors = json_decode($properties['edit_conf_si_color']);
+        $colors = $this->decodeProperty($properties, self::EDIT_CONF_SI_COLOR);
 
         for ($i = 0; $i < count($sd_title); $i++) {
             $cp = new ilColorPickerInputGUI(htmlspecialchars((string) $sd_title[$i], ENT_QUOTES, 'UTF-8'), "cp" . ($i));
-            $cp->setValue($colors[$i]);
+            $cp->setValue((string) ($colors[$i] ?? ''));
             $form->addItem($cp);
         }
 
@@ -424,6 +428,19 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $form->setFormAction($this->ctrl->getFormAction($this));
 
         return $form;
+    }
+
+    /**
+     * Reads a JSON property; missing or broken values give an empty array.
+     *
+     * @param array<string, mixed> $a_properties
+     * @return array<int|string, mixed>
+     */
+    private function decodeProperty(array $a_properties, string $a_key): array
+    {
+        $value = $a_properties[$a_key] ?? null;
+        $decoded = is_string($value) ? json_decode($value, true) : null;
+        return is_array($decoded) ? $decoded : [];
     }
 
     /**

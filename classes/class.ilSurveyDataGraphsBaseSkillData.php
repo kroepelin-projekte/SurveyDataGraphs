@@ -4,6 +4,9 @@ use ILIAS\DI\Container;
 
 class ilSurveyDataGraphsBaseSkillData
 {
+    /** Language key, translated by the GUI. */
+    public const string MSG_NO_LEVELS = 'msg_no_levels';
+
     private array $colors;
 
     private array $ref_ids;
@@ -123,6 +126,10 @@ class ilSurveyDataGraphsBaseSkillData
         $this->questions = $q_skill;
         $this->sum_original_thresholds = $sum_o_threshold;
         $this->original_thresholds = $origin_thresholds;
+
+        if ($level_values === []) {
+            return self::MSG_NO_LEVELS;
+        }
 
         $this->setColors(count($original_base_skill));
         $this->max_level_score = max($level_values);

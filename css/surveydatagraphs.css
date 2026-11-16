@@ -77,3 +77,10 @@
     max-width: 45%;
     margin: auto;
 }
+
+/* Hint for an element with incomplete settings: no chart underneath, so it stays in the flow. */
+.sdg-access-info.sdg-access-info-inline{
+    height: auto;
+    transform: none;
+    margin: 0 auto 25px;
+}
