@@ -15,6 +15,8 @@ class ilSurveyDataGraphsPresentationGUI
 
     private const string JS_INIT = "/js/surveydatagraphs.js";
 
+    private const string MODE_EDIT = "edit";
+
     private ilPlugin $plugin;
 
     private static int $id_counter = 0;
@@ -27,11 +29,15 @@ class ilSurveyDataGraphsPresentationGUI
 
     private Renderer $renderer;
 
+    /** Page rendering mode as passed by the core ("edit" in the page editor). */
+    private string $mode;
+
     /**
      * @param array<string, string> $a_properties
      */
-    public function __construct(ilPlugin $a_plugin, array $a_properties)
+    public function __construct(ilPlugin $a_plugin, array $a_properties, string $a_mode)
     {
+        $this->mode = $a_mode;
         global $DIC;
         $this->factory = $DIC->ui()->factory();
         $this->renderer = $DIC->ui()->renderer();
@@ -297,7 +303,9 @@ class ilSurveyDataGraphsPresentationGUI
 
         if (!$this->data->isConfigurationValid()) {
             $tpl_access->setVariable("ACCESS_MODIFIER", " sdg-access-info-inline");
-            $tpl_access->setVariable("ACCESS_ITEM", $this->escape($this->plugin->txt("configuration_incomplete")));
+            // Only authors in the page editor can fix the element; learners get a neutral hint.
+            $hint = $this->mode === self::MODE_EDIT ? "configuration_incomplete_edit" : "configuration_incomplete";
+            $tpl_access->setVariable("ACCESS_ITEM", $this->escape($this->plugin->txt($hint)));
             $tpl->setVariable("ACCESS", $tpl_access->get());
             return $tpl->get();
         }

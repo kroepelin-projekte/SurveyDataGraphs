@@ -171,8 +171,13 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $form = $this->initForm(true);
         if ($form->checkInput()) {
             $skilldata = new ilSurveyDataGraphsBaseSkillData($form->getInput(self::EDIT_CONF_SVY_SELECTION));
-            $input_validation = $skilldata->validateSurveySelection();
-            if (is_bool($input_validation)) {
+            $selection_error = null;
+            try {
+                $skilldata->validateSurveySelection();
+            } catch (ilSurveyDataGraphsSelectionException $e) {
+                $selection_error = $e;
+            }
+            if ($selection_error === null) {
                 $properties = $this->getProperties();
                 $properties[self::EDIT_CONF_SVY_SELECTION] = json_encode($form->getInput(self::EDIT_CONF_SVY_SELECTION));
                 $properties[self::EDIT_CONF_SI_PROC_LIMIT] = $form->getInput(self::EDIT_CONF_SI_PROC_LIMIT);
@@ -196,10 +201,7 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
                     $this->returnToParent();
                 }
             } else {
-                if ($input_validation === ilSurveyDataGraphsBaseSkillData::MSG_NO_LEVELS) {
-                    $input_validation = $this->getPlugin()->txt($input_validation);
-                }
-                $this->tpl->setOnScreenMessage("failure", $input_validation, true);
+                $this->tpl->setOnScreenMessage("failure", $this->getSelectionErrorText($selection_error), true);
             }
         }
         $form->setValuesByPost();
@@ -431,6 +433,17 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
     }
 
     /**
+     * Translates a selection error. The ref id is an int and filled in via %d,
+     * so no user input reaches the message unescaped.
+     */
+    private function getSelectionErrorText(ilSurveyDataGraphsSelectionException $a_error): string
+    {
+        $text = $this->getPlugin()->txt($a_error->getLangKey());
+        $ref_id = $a_error->getRefId();
+        return $ref_id === null ? $text : sprintf($text, $ref_id);
+    }
+
+    /**
      * Reads a JSON property; missing or broken values give an empty array.
      *
      * @param array<string, mixed> $a_properties
@@ -456,7 +469,7 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
             static fn($value) => is_string($value) ? html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8') : $value,
             $a_properties
         );
-        $presentation = new ilSurveyDataGraphsPresentationGUI($this->plugin, $properties);
+        $presentation = new ilSurveyDataGraphsPresentationGUI($this->plugin, $properties, $a_mode);
         return $presentation->getContentTpl();
     }
 

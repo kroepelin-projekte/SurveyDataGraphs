@@ -4,11 +4,9 @@ use ILIAS\DI\Container;
 
 class ilSurveyDataGraphsBaseSkillData
 {
-    /** Language key, translated by the GUI. */
-    public const string MSG_NO_LEVELS = 'msg_no_levels';
-
     private array $colors;
 
+    /** @var list<int> */
     private array $ref_ids;
 
     private array $original_base_skill;
@@ -25,14 +23,22 @@ class ilSurveyDataGraphsBaseSkillData
 
     private int $max_level_score;
 
+    /**
+     * @param array<int|string, mixed> $a_svy_ref_ids ref ids as entered in the form
+     */
     public function __construct(array $a_svy_ref_ids)
     {
         global $DIC;
         $this->dic = $DIC;
-        $this->ref_ids = $a_svy_ref_ids;
+        $this->ref_ids = array_values(array_map(intval(...), $a_svy_ref_ids));
     }
 
-    public function validateSurveySelection(): bool|string
+    /**
+     * Reads competences, levels, thresholds and questions of the selected surveys.
+     *
+     * @throws ilSurveyDataGraphsSelectionException if a survey cannot be used
+     */
+    public function validateSurveySelection(): void
     {
         $svy_base_skills = [];
         $original_base_skill = [];
@@ -47,27 +53,27 @@ class ilSurveyDataGraphsBaseSkillData
         foreach ($this->ref_ids as $ref_id) {
 
 
-            $obj_id = ilObject::_lookupObjectId(intval($ref_id));
+            $obj_id = ilObject::_lookupObjectId($ref_id);
             if (ilObjSurvey::_lookupType($obj_id) !== "svy") {
-                return "Survey Ref_Id: " . $ref_id . " not exist!";
+                throw new ilSurveyDataGraphsSelectionException(ilSurveyDataGraphsSelectionException::SVY_NOT_FOUND, $ref_id);
             }
             $obj_survey = new ilObjSurvey($ref_id);
             if ($obj_survey->getOfflineStatus()) {
-                return " Ref_Id: " . $ref_id . " is offline";
+                throw new ilSurveyDataGraphsSelectionException(ilSurveyDataGraphsSelectionException::SVY_OFFLINE, $ref_id);
             }
             $svy_skill_obj = new ilSurveySkill($obj_survey);
             $base_skill_item = $svy_skill_obj->getAllAssignedSkillsAsOptions();
             ksort($base_skill_item, SORT_NUMERIC);
 
             if (empty($base_skill_item)) {
-                return " Ref_Id: " . $ref_id . " has no competencies!";
+                throw new ilSurveyDataGraphsSelectionException(ilSurveyDataGraphsSelectionException::SVY_NO_COMPETENCES, $ref_id);
             }
 
 
             $svy_skill_threshold = new ilSurveySkillThresholds($obj_survey);
             $thresholds = $svy_skill_threshold->getThresholds();
             if (empty($thresholds)) {
-                return " Ref_Id: " . $ref_id . " has no Competence Thresholds!";
+                throw new ilSurveyDataGraphsSelectionException(ilSurveyDataGraphsSelectionException::SVY_NO_THRESHOLDS, $ref_id);
             }
 
             $svy_base_skills[] = $base_skill_item;
@@ -75,7 +81,7 @@ class ilSurveyDataGraphsBaseSkillData
             if (isset($svy_base_skills)) {
                 foreach ($svy_base_skills as $svy_base_skill) {
                     if (!empty(array_diff_key($svy_base_skills[array_key_first($svy_base_skills)], $svy_base_skill))) {
-                        return "Different Survey competencies!";
+                        throw new ilSurveyDataGraphsSelectionException(ilSurveyDataGraphsSelectionException::SVY_DIFFERENT_COMPETENCES);
                     }
                     foreach ($svy_base_skills[array_key_first($svy_base_skills)] as $key => $value) {
                         $ids = explode(":", $key);
@@ -102,7 +108,10 @@ class ilSurveyDataGraphsBaseSkillData
                         }
                         $question_for_skill = $svy_skill_obj->getQuestionsForSkill($skl_id, $tref_id);
                         if (empty($question_for_skill)) {
-                            return " Ref_Id: " . $ref_id . " has no Competence Items ";
+                            throw new ilSurveyDataGraphsSelectionException(
+                                ilSurveyDataGraphsSelectionException::SVY_NO_COMPETENCE_QUESTIONS,
+                                $ref_id
+                            );
                         }
                         $q_skill[$skl_id][$obj_id] = array_flip($question_for_skill);
 
@@ -128,13 +137,11 @@ class ilSurveyDataGraphsBaseSkillData
         $this->original_thresholds = $origin_thresholds;
 
         if ($level_values === []) {
-            return self::MSG_NO_LEVELS;
+            throw new ilSurveyDataGraphsSelectionException(ilSurveyDataGraphsSelectionException::NO_LEVELS);
         }
 
         $this->setColors(count($original_base_skill));
         $this->max_level_score = max($level_values);
-
-        return true;
     }
 
     public function getOriginalSvyBaseSkills(): array

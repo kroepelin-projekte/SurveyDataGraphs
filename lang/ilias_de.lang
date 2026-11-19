@@ -68,5 +68,12 @@ default_diagram_title#:#Deine Studienmotivation
 default_access_placeholder#:#Nach der Bearbeitung aller Umfragen findest du hier deinen Lernverlauf.
 chart_aria_label#:#Diagramm der Umfrageergebnisse
 chart_fallback#:#Dein Browser kann das Diagramm nicht anzeigen.
-configuration_incomplete#:#Dieses Element kann nicht angezeigt werden, weil seine Einstellungen unvollständig sind oder eine Umfrage nicht mehr existiert. Bitte das Element neu anlegen.
+configuration_incomplete#:#Dieses Element kann derzeit nicht angezeigt werden.
+configuration_incomplete_edit#:#Dieses Element kann nicht angezeigt werden, weil seine Einstellungen unvollständig sind oder eine Umfrage nicht mehr existiert. Bitte das Element neu anlegen.
 msg_no_levels#:#Die Kompetenzen der Umfrage haben keine Ausprägungen.
+msg_svy_not_found#:#Unter der Ref-ID %d gibt es keine Umfrage.
+msg_svy_offline#:#Die Umfrage mit der Ref-ID %d ist offline.
+msg_svy_no_competences#:#Der Umfrage mit der Ref-ID %d sind keine Kompetenzen zugeordnet.
+msg_svy_no_thresholds#:#Für die Umfrage mit der Ref-ID %d sind keine Kompetenz-Schwellenwerte festgelegt.
+msg_svy_no_competence_questions#:#Der Umfrage mit der Ref-ID %d sind nicht für jede Kompetenz Fragen zugeordnet.
+msg_svy_different_competences#:#Die gewählten Umfragen sind unterschiedlichen Kompetenzen zugeordnet.
