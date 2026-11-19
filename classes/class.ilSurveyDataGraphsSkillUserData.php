@@ -54,6 +54,12 @@ class ilSurveyDataGraphsSkillUserData
 
     private bool $configuration_valid;
 
+    /**
+     * False for the anonymous user. All visitors who are not logged in share
+     * this one account and its survey runs, so its results are never shown.
+     */
+    private bool $user_data_available;
+
     private ?bool $requirements = null;
 
     /** @var array<string, mixed>|null */
@@ -99,6 +105,7 @@ class ilSurveyDataGraphsSkillUserData
         $this->y_scale_title = (string) ($a_properties[ilSurveyDataGraphsPluginGUI::Y_SCALE_TITLE] ?? 'y');
         $this->max_level_value = (int) ($a_properties[ilSurveyDataGraphsPluginGUI::MAX_LEVEL_VALUE] ?? 0);
 
+        $this->user_data_available = !$DIC->user()->isAnonymous();
         $this->obj_ids = $this->getSvyObjIds($this->ref_ids);
         $this->configuration_valid = $this->obj_ids !== []
             && !in_array(0, $this->obj_ids, true)
@@ -155,7 +162,7 @@ class ilSurveyDataGraphsSkillUserData
 
     private function checkRequirements(): bool
     {
-        if (!$this->configuration_valid) {
+        if (!$this->configuration_valid || !$this->user_data_available) {
             return false;
         }
         $fi_svy_objs = $this->data->getFinishedSvyObjs($this->obj_ids);
@@ -175,7 +182,7 @@ class ilSurveyDataGraphsSkillUserData
      */
     public function getResultListData(): array
     {
-        if (!$this->configuration_valid) {
+        if (!$this->configuration_valid || !$this->user_data_available) {
             return [];
         }
         $i = 1;
@@ -367,7 +374,7 @@ class ilSurveyDataGraphsSkillUserData
             "chart_type" => count($this->obj_ids) === 1 ? 'bar' : 'line',
             "runs" => count($this->obj_ids) === 1 ? [""] : $this->getChartRunData(),
             "index_axis" => count($this->obj_ids) === 1 ? 'y' : 'x',
-            "skl_data" => $this->configuration_valid ? $this->getChartDSData() : [],
+            "skl_data" => $this->configuration_valid && $this->user_data_available ? $this->getChartDSData() : [],
             "color" => $this->colors,
             "hidden_data_label" => $this->chart_legend_hidden_level,
             "x_scale_title" => $this->x_scale_title,
@@ -440,6 +447,10 @@ class ilSurveyDataGraphsSkillUserData
     private function getLevel(): array
     {
         if ($this->level !== null) {
+            return $this->level;
+        }
+        if (!$this->user_data_available) {
+            $this->level = [];
             return $this->level;
         }
         $svy_answer_values = $this->getAnswerDataForAll();

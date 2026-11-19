@@ -77,3 +77,4 @@ msg_svy_no_competences#:#Der Umfrage mit der Ref-ID %d sind keine Kompetenzen zu
 msg_svy_no_thresholds#:#Für die Umfrage mit der Ref-ID %d sind keine Kompetenz-Schwellenwerte festgelegt.
 msg_svy_no_competence_questions#:#Der Umfrage mit der Ref-ID %d sind nicht für jede Kompetenz Fragen zugeordnet.
 msg_svy_different_competences#:#Die gewählten Umfragen sind unterschiedlichen Kompetenzen zugeordnet.
+msg_placeholder_syntax#:#Fünf geschweifte Klammern in Folge sind nicht erlaubt, weil sie als Platzhalter der Seite gelten.

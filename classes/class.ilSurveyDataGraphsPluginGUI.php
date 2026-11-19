@@ -4,7 +4,7 @@
  *
  * @ilCtrl_isCalledBy ilSurveyDataGraphsPluginGUI: ilPCPluggedGUI
  */
-class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
+class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI implements ilCtrlSecurityInterface
 {
     public const string MSG_OBJ_MODIFIED = "msg_obj_modified";
 
@@ -19,6 +19,8 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
     public const string CMD_EDIT = "edit";
 
     public const string CMD_SAVE = "save";
+
+    private const string CMD_INSERT_FORM = "insert";
 
     public const string MODE = "mode";
 
@@ -136,11 +138,31 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $this->tabs = $DIC->tabs();
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getUnsafeGetCommands(): array
+    {
+        return [
+            self::CMD_CREATE,
+            self::CMD_UPDATE,
+            self::UPDATE_COLOR,
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSafePostCommands(): array
+    {
+        return [];
+    }
+
     public function executeCommand(): void
     {
-        $cmd = $this->ctrl->getCmd();
+        $cmd = $this->ctrl->getCmd() ?? $this->getFallbackCommand();
         if (in_array($cmd, array(self::CMD_CREATE,
-                                 self::CMD_SAVE,
+                                 self::CMD_INSERT_FORM,
                                  self::CMD_EDIT,
                                  self::CMD_UPDATE,
                                  self::CMD_CANCEL,
@@ -149,6 +171,15 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         ))) {
             $this->$cmd();
         }
+    }
+
+    /**
+     * Read-only command for requests without a valid token: the insert form
+     * while the element does not exist yet, otherwise its settings form.
+     */
+    private function getFallbackCommand(): string
+    {
+        return is_object($this->getPCGUI()->getContentObject()) ? self::CMD_EDIT : self::CMD_INSERT_FORM;
     }
 
     /**
@@ -341,28 +372,33 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $parent_titel->setInfo($this->plugin->txt(self::VIEW_PARENT_TITLE_INFO));
         $parent_titel->setValue((string) ($properties[self::EDIT_CONF_PARENT_TITLE] ?? ''));
         $parent_titel->setInputType('text');
+        $this->rejectPlaceholderSyntax($parent_titel);
         $form->addItem($parent_titel);
 
         $diagram_titel = new ilTextInputGUI($this->plugin->txt(self::VIEW_DIAGRAM_TITLE), self::VIEW_DIAGRAM_TITLE);
         $diagram_titel->setInfo($this->plugin->txt(self::VIEW_DIAGRAM_TITLE_INFO));
         $diagram_titel->setValue((string) ($properties[self::EDIT_CONF_DIAGRAM_TITLE] ?? ''));
         $diagram_titel->setInputType('text');
+        $this->rejectPlaceholderSyntax($diagram_titel);
         $form->addItem($diagram_titel);
 
         $access_placeholder = new ilTextInputGUI($this->plugin->txt(self::VIEW_ACCESS_PLACEHOLDER), self::VIEW_ACCESS_PLACEHOLDER);
         $access_placeholder->setInfo($this->plugin->txt(self::VIEW_ACCESS_PLACEHOLDER_INFO));
         $access_placeholder->setValue((string) ($properties[self::EDIT_CONF_ACCESS_PLACEHOLDER] ?? ''));
         $access_placeholder->setInputType('text');
+        $this->rejectPlaceholderSyntax($access_placeholder);
         $form->addItem($access_placeholder);
 
         $x_scale_title = new ilTextInputGUI($this->plugin->txt(self::X_SCALE_TITLE), self::X_SCALE_TITLE);
         $x_scale_title->setValue($properties[self::X_SCALE_TITLE] ?? 'x');
         $x_scale_title->setInputType('text');
+        $this->rejectPlaceholderSyntax($x_scale_title);
         $form->addItem($x_scale_title);
 
         $y_scale_title = new ilTextInputGUI($this->plugin->txt(self::Y_SCALE_TITLE), self::Y_SCALE_TITLE);
         $y_scale_title->setValue($properties[self::Y_SCALE_TITLE] ?? 'y');
         $y_scale_title->setInputType('text');
+        $this->rejectPlaceholderSyntax($y_scale_title);
         $form->addItem($y_scale_title);
 
         $scale_header = new ilFormSectionHeaderGUI();
@@ -430,6 +466,18 @@ class ilSurveyDataGraphsPluginGUI extends ilPageComponentPluginGUI
         $form->setFormAction($this->ctrl->getFormAction($this));
 
         return $form;
+    }
+
+    /**
+     * The page stores the element as "{{{{{Plugged...}}}}}" and resolves other
+     * "{{{{{...}}}}}" placeholders on output. Five braces in a text would end
+     * the element early (the whole page fails) or inject a placeholder, so
+     * they are rejected on save.
+     */
+    private function rejectPlaceholderSyntax(ilTextInputGUI $a_input): void
+    {
+        $a_input->setValidationRegexp('/^(?!.*(?:\{{5}|\}{5}))/su');
+        $a_input->setValidationFailureMessage($this->plugin->txt('msg_placeholder_syntax'));
     }
 
     /**

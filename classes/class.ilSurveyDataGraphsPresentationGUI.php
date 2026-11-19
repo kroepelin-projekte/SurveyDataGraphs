@@ -46,9 +46,18 @@ class ilSurveyDataGraphsPresentationGUI
         self::$id_counter++;
     }
 
+    /**
+     * HTML-escapes a value and encodes curly braces like the core does in
+     * prepareFormOutput(). Otherwise ilTemplate would replace "{VAR}" in a
+     * text and the page would resolve "{{{{{...}}}}}" placeholders in it.
+     */
     private function escape(mixed $a_value): string
     {
-        return htmlspecialchars((string) $a_value, ENT_QUOTES, 'UTF-8');
+        return str_replace(
+            ['{', '}'],
+            ['&#123;', '&#125;'],
+            htmlspecialchars((string) $a_value, ENT_QUOTES, 'UTF-8')
+        );
     }
 
     /**

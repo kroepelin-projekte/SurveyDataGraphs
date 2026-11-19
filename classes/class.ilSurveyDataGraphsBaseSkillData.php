@@ -51,10 +51,11 @@ class ilSurveyDataGraphsBaseSkillData
 
 
         foreach ($this->ref_ids as $ref_id) {
-
-
             $obj_id = ilObject::_lookupObjectId($ref_id);
-            if (ilObjSurvey::_lookupType($obj_id) !== "svy") {
+            if (
+                ilObjSurvey::_lookupType($obj_id) !== "svy"
+                || !$this->dic->access()->checkAccess("read", "", $ref_id, "svy", $obj_id)
+            ) {
                 throw new ilSurveyDataGraphsSelectionException(ilSurveyDataGraphsSelectionException::SVY_NOT_FOUND, $ref_id);
             }
             $obj_survey = new ilObjSurvey($ref_id);

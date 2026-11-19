@@ -77,3 +77,4 @@ msg_svy_no_competences#:#The survey with ref ID %d has no competences assigned.
 msg_svy_no_thresholds#:#The survey with ref ID %d has no competence thresholds.
 msg_svy_no_competence_questions#:#The survey with ref ID %d has a competence without assigned questions.
 msg_svy_different_competences#:#The selected surveys are assigned to different competences.
+msg_placeholder_syntax#:#Five curly braces in a row are not allowed because the page treats them as a placeholder.
